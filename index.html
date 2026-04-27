@@ -804,6 +804,8 @@ function renderAporteHist() {
       + '<div class="avatar ' + (a.quien==='matias'?'av-m':'av-b') + '" style="width:28px;height:28px;font-size:11px;flex-shrink:0">' + (a.quien==='matias'?'M':'B') + '</div>'
       + '<div class="gasto-info"><div class="gi-name">' + (a.quien==='matias'?'Matías':'Barbra') + (a.nota?' · '+a.nota:'') + '</div><div class="gi-sub">' + labelMes(a.mes) + ' · ' + a.fecha.substring(5) + '</div></div>'
       + '<div class="gasto-right"><div class="gr-monto" style="color:var(--green)">+' + fmt(a.monto) + '</div></div>'
+      + '<button class="btn-del" style="color:var(--blue)" data-id="' + a.id + '" data-mes="' + a.mes + '" onclick="abrirEdicionAporte(this)" title="Editar">✏️</button>'
+      + '<button class="btn-del" data-id="' + a.id + '" data-mes="' + a.mes + '" onclick="eliminarAporteEl(this)" title="Eliminar">×</button>'
       + '</div>'
     ).join('');
 }
@@ -823,9 +825,72 @@ function switchTab(tab) {
 function toggleEstadoEl(el) { toggleEstado(el.dataset.id, el.dataset.mes); }
 function elimGastoEl(el) { eliminarGasto(el.dataset.mes, el.dataset.id); }
 function elimFijoEl(el) { eliminarFijo(el.dataset.id); }
+function eliminarAporteEl(el) { eliminarAporte(el.dataset.mes, el.dataset.id); }
+function abrirEdicionAporte(el) {
+  const mes = el.dataset.mes;
+  const id = el.dataset.id;
+  const a = (allAportes[mes] || {})[id];
+  if (!a) return;
+  document.getElementById('ea-id').value = id;
+  document.getElementById('ea-mes').value = mes;
+  document.getElementById('ea-quien').value = a.quien;
+  document.getElementById('ea-monto').value = a.monto;
+  document.getElementById('ea-fecha').value = a.fecha;
+  document.getElementById('ea-nota').value = a.nota || '';
+  showModal('edit-aporte-modal');
+}
+async function guardarEdicionAporte() {
+  const id = document.getElementById('ea-id').value;
+  const mes = document.getElementById('ea-mes').value;
+  const quien = document.getElementById('ea-quien').value;
+  const monto = +document.getElementById('ea-monto').value;
+  const fecha = document.getElementById('ea-fecha').value;
+  const nota = document.getElementById('ea-nota').value.trim();
+  if (!monto) { alert('El monto no puede ser cero, causa 😅'); return; }
+  const updated = { ...((allAportes[mes] || {})[id] || {}), quien, monto, fecha, nota };
+  if (db) await db.ref('aportes/' + mes + '/' + id).set(updated);
+  else { if (allAportes[mes]) allAportes[mes][id] = updated; renderAll(); }
+  hideModal('edit-aporte-modal');
+  renderAporteHist();
+  showToast('Aporte actualizado, listo pe 👌');
+}
+async function eliminarAporte(mes, id) {
+  if (!confirm('¿Seguro que quieres eliminar este aporte?')) return;
+  if (db) await db.ref('aportes/' + mes + '/' + id).remove();
+  else { if (allAportes[mes]) { delete allAportes[mes][id]; renderAll(); } }
+  renderAporteHist();
+  showToast('Aporte eliminado');
+}
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 initFB();
 </script>
+<!-- EDIT APORTE MODAL -->
+<div class="modal-overlay" id="edit-aporte-modal">
+  <div class="modal">
+    <h3>✏️ Editar aporte</h3>
+    <div class="help-box" id="help-edit-aporte"><div class="hb-inner"><span class="hi">💡</span><span class="hb-txt">Corrige lo que pusiste mal. Al guardar se actualiza al toque.</span></div><button class="hb-close" onclick="closeHelp('edit-aporte')">×</button></div>
+    <input type="hidden" id="ea-id">
+    <input type="hidden" id="ea-mes">
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="field"><label>¿Quién aportó?</label>
+        <select id="ea-quien">
+          <option value="matias">Matías</option>
+          <option value="barbra">Barbra</option>
+        </select>
+      </div>
+      <div class="field"><label>Monto (S/)</label><input type="number" id="ea-monto" placeholder="0"></div>
+    </div>
+    <div class="form-grid" style="margin-bottom:12px">
+      <div class="field"><label>Fecha</label><input type="date" id="ea-fecha"></div>
+      <div class="field"><label>Nota</label><input id="ea-nota" placeholder="Ej: Sueldo abril"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="hideModal('edit-aporte-modal')">Cancelar</button>
+      <button class="btn btn-blue" onclick="guardarEdicionAporte()">💾 Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
