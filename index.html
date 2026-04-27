@@ -253,6 +253,18 @@
   .dot.error { background: var(--red); }
 
   /* RESPONSIVE */
+  .saldo-box { border-radius: var(--radius); padding: 16px; text-align: center; margin-bottom: 12px; }
+  .saldo-box .s-lbl { font-size: 12px; margin-bottom: 4px; }
+  .saldo-box .s-val { font-size: 28px; font-weight: 500; }
+  .saldo-box .s-sub { font-size: 12px; margin-top: 4px; opacity: .8; }
+  .saldo-ok { background: var(--green-light); color: var(--green); }
+  .saldo-owe { background: var(--red-light); color: var(--red); }
+  .saldo-even { background: var(--bg); color: var(--muted); }
+  .pago-hist { font-size: 13px; }
+  .pago-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); }
+  .pago-row:last-child { border-bottom: none; }
+  .btn-show-pago { background: var(--text); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 18px; font-family: "DM Sans",sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .btn-show-pago:hover { opacity: .85; }
   @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; }
     .form-grid.three { grid-template-columns: 1fr 1fr; }
@@ -362,6 +374,27 @@
       <div id="bars"></div>
     </div>
 
+    <!-- SALDO -->
+    <div class="sec-label">Saldo entre ustedes</div>
+    <div class="card" id="saldo-card">
+      <div id="saldo-contenido"></div>
+      <div id="pago-form" style="display:none;margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">Registrar pago</div>
+        <div class="form-grid three">
+          <div class="field"><label>Monto (S/)</label><input type="number" id="p-monto" placeholder="0" min="0"></div>
+          <div class="field">
+            <label>Método</label>
+            <select id="p-metodo">
+              <option value="transferencia">Transferencia</option>
+              <option value="efectivo">Efectivo</option>
+            </select>
+          </div>
+          <div class="field"><label>Nota (opcional)</label><input id="p-nota" placeholder="Ej: Yape"></div>
+        </div>
+        <button class="btn-add" style="margin-top:10px" onclick="registrarPago()">Confirmar pago</button>
+      </div>
+    </div>
+
     <!-- AGREGAR GASTO -->
     <div class="sec-label">Registrar gasto</div>
     <div class="card">
@@ -400,6 +433,20 @@
         <div class="field">
           <label>Fecha</label>
           <input type="date" id="g-fecha">
+        </div>
+      </div>
+      <div class="form-grid" style="margin-top:10px">
+        <div class="field">
+          <label>¿Quién lo pagó?</label>
+          <select id="g-pagador" onchange="togglePagadorMonto()">
+            <option value="matias">Lo pagué yo (Matías)</option>
+            <option value="barbra">Lo pagó Barbra</option>
+            <option value="split">Cada uno su parte</option>
+          </select>
+        </div>
+        <div class="field" id="g-pagador-monto-wrap" style="display:none">
+          <label>¿Cuánto pagó Matías? (S/)</label>
+          <input type="number" id="g-pagador-monto" placeholder="0" min="0">
         </div>
       </div>
       <button class="btn-add" onclick="agregarGasto()">+ Registrar</button>
@@ -494,6 +541,113 @@ let allData = {};
 let ingExtAll = {};
 let cfgListener = null;
 let dataListener = null;
+
+// ── PAGOS ────────────────────────────────────────────────────────────────
+let pagosAll = {};
+
+function togglePagadorMonto() {
+  const val = document.getElementById('g-pagador').value;
+  const wrap = document.getElementById('g-pagador-monto-wrap');
+  wrap.style.display = val === 'split' ? 'block' : 'none';
+}
+
+function calcSaldo() {
+  // Returns positive = Matías le debe a Barbra, negative = Barbra le debe a Matías
+  const mesData = allData[mesActivo] || {};
+  const gastos = Object.values(mesData);
+  const {pM, pB} = calcPct();
+  let saldo = 0; // positive = Matías owes Barbra
+
+  gastos.forEach(g => {
+    if (g.tipo !== 'shared') return;
+    const debeM = g.monto * pM; // lo que le corresponde pagar a Matías
+    if (g.pagador === 'barbra') {
+      // Barbra pagó todo → Matías le debe su parte
+      saldo += debeM;
+    } else if (g.pagador === 'split') {
+      // Cada uno pagó su parte → sin deuda
+      saldo += 0;
+    } else {
+      // Matías pagó todo → Barbra le debe su parte
+      saldo -= g.monto * pB;
+    }
+  });
+
+  // Restar pagos ya realizados
+  const pagosData = pagosAll[mesActivo] || {};
+  Object.values(pagosData).forEach(p => {
+    // p.de = quien pagó, p.para = quien recibe
+    if (p.de === 'matias') saldo -= p.monto; // Matías pagó → reduce lo que debe
+    else saldo += p.monto; // Barbra pagó → reduce lo que debe
+  });
+
+  return saldo;
+}
+
+function renderSaldo() {
+  const saldo = calcSaldo();
+  const {pM, pB} = calcPct();
+  const pagosData = pagosAll[mesActivo] || {};
+  const pagosList = Object.values(pagosData).sort((a,b) => b.ts - a.ts);
+  const abs = Math.abs(saldo);
+  
+  let boxHtml = '';
+  if (abs < 1) {
+    boxHtml = '<div class="saldo-box saldo-even"><div class="s-lbl">Saldo</div><div class="s-val">Estás al día</div><div class="s-sub">No hay deudas entre ustedes</div></div>';
+  } else if (saldo > 0) {
+    boxHtml = '<div class="saldo-box saldo-owe"><div class="s-lbl">Matías le debe a Barbra</div><div class="s-val">' + fmt(abs) + '</div><div class="s-sub">Por gastos que Barbra adelantó</div></div>';
+  } else {
+    boxHtml = '<div class="saldo-box saldo-ok"><div class="s-lbl">Barbra le debe a Matías</div><div class="s-val">' + fmt(abs) + '</div><div class="s-sub">Por gastos que Matías adelantó</div></div>';
+  }
+
+  let pagosHtml = '';
+  if (pagosList.length > 0) {
+    pagosHtml = '<div class="pago-hist" style="margin-top:12px"><div style="font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Pagos registrados</div>';
+    pagosList.forEach(p => {
+      const quien = p.de === 'matias' ? 'Matías' : 'Barbra';
+      const para = p.de === 'matias' ? 'Barbra' : 'Matías';
+      pagosHtml += '<div class="pago-row">'
+        + '<span><span class="who-dot" style="background:' + (p.de==='matias'?'var(--matias)':'var(--barbra)') + '"></span>' + quien + ' → ' + para + ' <span style="color:var(--muted);font-size:12px">(' + p.metodo + ')</span>' + (p.nota ? ' · ' + p.nota : '') + '</span>'
+        + '<span style="font-weight:500;color:var(--green)">+' + fmt(p.monto) + '</span>'
+        + '</div>';
+    });
+    pagosHtml += '</div>';
+  }
+
+  const btnPago = abs >= 1 ? '<button class="btn-show-pago" style="margin-top:12px" onclick="togglePagoForm()">Registrar pago</button>' : '';
+
+  document.getElementById('saldo-contenido').innerHTML = boxHtml + pagosHtml + btnPago;
+}
+
+function togglePagoForm() {
+  const f = document.getElementById('pago-form');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+async function registrarPago() {
+  const monto = +document.getElementById('p-monto').value;
+  const metodo = document.getElementById('p-metodo').value;
+  const nota = document.getElementById('p-nota').value.trim();
+  if (!monto) { alert('Ingresa el monto del pago'); return; }
+  
+  // Who is paying whom: if Matías owes Barbra, Matías pays
+  const saldo = calcSaldo();
+  const de = saldo > 0 ? 'matias' : 'barbra';
+  
+  const pago = { id: 'p' + Date.now(), monto, metodo, nota, de, ts: Date.now(), fecha: new Date().toISOString().substring(0,10) };
+  
+  if (db) {
+    await db.ref('pagos/' + mesActivo + '/' + pago.id).set(pago);
+  } else {
+    if (!pagosAll[mesActivo]) pagosAll[mesActivo] = {};
+    pagosAll[mesActivo][pago.id] = pago;
+    renderSaldo();
+  }
+  document.getElementById('p-monto').value = '';
+  document.getElementById('p-nota').value = '';
+  document.getElementById('pago-form').style.display = 'none';
+  showToast('Pago registrado');
+}
 
 function loadLocalCfg() {
   try {
@@ -608,7 +762,12 @@ function listenData() {
     ingExtAll = snap.val() || {};
     renderMes();
   });
-  dataListener = () => { ref.off('value'); refIng.off('value'); };
+  const refPagos = db.ref('pagos');
+  refPagos.on('value', snap => {
+    pagosAll = snap.val() || {};
+    renderSaldo();
+  });
+  dataListener = () => { ref.off('value'); refIng.off('value'); refPagos.off('value'); };
 }
 
 async function agregarIngreso() {
@@ -773,12 +932,15 @@ function renderMes() {
             : '<span class="badge badge-barbra">Solo Barbra</span>';
           const whoColor = g.quien === 'matias' ? 'var(--matias)' : 'var(--barbra)';
           const whoName = g.quien === 'matias' ? 'Matías' : 'Barbra';
+          const pagadorLabel = !g.pagador || g.pagador === 'matias' ? '<span style="color:var(--matias);font-size:11px">Pagó Matías</span>'
+            : g.pagador === 'barbra' ? '<span style="color:var(--barbra);font-size:11px">Pagó Barbra</span>'
+            : '<span style="color:var(--muted);font-size:11px">Split</span>';
           return '<tr>'
             + '<td style="color:var(--muted);white-space:nowrap">'+g.fecha.substring(5)+'</td>'
             + '<td style="font-weight:500">'+g.concepto+'</td>'
             + '<td style="color:var(--muted);text-transform:capitalize">'+g.cat+'</td>'
             + '<td>'+badge+'</td>'
-            + '<td><span class="who-dot" style="background:'+whoColor+'"></span>'+whoName+'</td>'
+            + '<td>'+pagadorLabel+'</td>'
             + '<td style="text-align:right;font-weight:500">'+fmt(g.monto)+'</td>'
             + '<td><button class="btn-del" onclick="deleteGasto(\'' + mesActivo + '\',\'' + g.id + '\')">×</button></td>'
             + '</tr>';
@@ -811,6 +973,7 @@ function renderMes() {
     </div>`;
 
   document.getElementById('tabla-gastos').innerHTML = tbodyGastos + tbodyIng;
+  renderSaldo();
 }
 
 // ── ACTIONS ──────────────────────────────────────────────────────────────
@@ -821,9 +984,12 @@ async function agregarGasto() {
   const cat = document.getElementById('g-cat').value;
   const fecha = document.getElementById('g-fecha').value;
   if (!concepto || !monto) { alert('Completa concepto y monto.'); return; }
+  const pagador = document.getElementById('g-pagador').value;
+  const pagadorMonto = pagador === 'split' ? (+document.getElementById('g-pagador-monto').value || monto * 0.5) : null;
   const gasto = {
     id: 'g' + Date.now(),
     concepto, monto, tipo, cat, fecha,
+    pagador, pagadorMonto,
     quien: currentUser,
     ts: Date.now()
   };
