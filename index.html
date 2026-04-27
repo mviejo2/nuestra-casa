@@ -14,8 +14,9 @@
 <style>
 :root{--bg:#F7F5F0;--surface:#fff;--border:#E8E4DC;--text:#1A1A18;--muted:#888880;--hint:#BBBBBB;--blue:#2563EB;--blue-light:#EEF3FE;--green:#16A34A;--green-light:#F0FDF4;--amber:#D97706;--amber-light:#FFFBEB;--red:#DC2626;--red-light:#FEF2F2;--matias:#2563EB;--barbra:#16A34A;--radius:12px;--radius-sm:8px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;-webkit-text-size-adjust:100%}
+.main{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right));display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
 .topbar-title{font-family:"DM Serif Display",serif;font-size:19px;letter-spacing:-.3px}
 .topbar-title span{color:var(--blue)}
 .user-pill{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:4px 12px 4px 6px;cursor:pointer;font-size:13px;font-weight:500}
@@ -75,7 +76,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .field input,.field select{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:"DM Sans",sans-serif;font-size:14px;background:var(--bg);color:var(--text);transition:border .15s;width:100%}
 .field input:focus,.field select:focus{outline:none;border-color:var(--blue);background:#fff}
 .btn{border:none;border-radius:var(--radius-sm);padding:9px 18px;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
-.btn-pri{background:var(--text);color:#fff}.btn-pri:hover{opacity:.85}
+.btn-pri{background:var(--text);color:#fff;width:100%}.btn-pri:hover{opacity:.85}
 .btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:#1D4ED8}
 .btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#15803D}
 .btn-ghost{background:none;border:1px solid var(--border);color:var(--muted)}.btn-ghost:hover{background:var(--bg)}
@@ -115,14 +116,47 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .month-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
 /* SECTION */
 .sec-divider{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px;display:flex;align-items:center;justify-content:space-between}
+/* TOOLTIPS / HELP */
+.help-box{background:var(--amber-light);border:1px solid #FDE68A;border-radius:var(--radius-sm);padding:9px 12px;font-size:12px;color:#92400E;margin-bottom:12px;line-height:1.5;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.help-box .hb-inner{display:flex;gap:8px;align-items:center;flex:1;min-width:0}
+.help-box .hi{font-size:15px;flex-shrink:0}
+.help-box span.hb-txt{flex:1;min-width:0}
+.help-box .hb-close{background:none;border:none;color:#92400E;cursor:pointer;font-size:16px;padding:0 2px;opacity:.6;flex-shrink:0;line-height:1}
+.help-box .hb-close:hover{opacity:1}
+.help-box.hidden{display:none}
 /* RESPONSIVE */
-@media(max-width:600px){.form-grid{grid-template-columns:1fr}.form-grid.three{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:1fr 1fr}.fondo-bars{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .main{padding:14px 12px 80px}
+  .nav-tabs{margin-bottom:14px}
+  .nav-tab{font-size:12px;padding:7px 4px}
+  .form-grid{grid-template-columns:1fr}
+  .form-grid.three{grid-template-columns:1fr 1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+  .fondo-bars{grid-template-columns:1fr}
+  .fondo-big .val{font-size:30px}
+  .modal{padding:20px;margin:10px}
+  .card{padding:14px}
+  .btn{padding:10px 14px;font-size:13px}
+  .gasto-item{gap:8px}
+  .gasto-info .gi-name{font-size:13px}
+  .topbar{padding:0 14px}
+  .topbar-title{font-size:17px}
+  .month-tabs{gap:4px}
+  .month-tab{font-size:11px;padding:4px 10px}
+  .help-box{font-size:11px;padding:8px 10px}
+  .field input,.field select{font-size:16px}
+}
+@media(max-width:380px){
+  .nav-tab{font-size:11px;padding:6px 2px}
+  .form-grid.three{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="topbar-title">nuestra <span>casa</span></div>
+  <div class="topbar-title">nuestra <span>casa</span> 🏠❤️</div>
   <div style="display:flex;align-items:center;gap:12px">
     <div id="db-status"><div class="dot" id="db-dot"></div><span id="db-txt">Conectando</span></div>
     <div class="user-pill" id="user-pill" onclick="logout()" style="display:none">
@@ -136,7 +170,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 <div id="login-screen">
   <div class="login-card">
     <h2>Nuestra Casa</h2>
-    <p>¿Quién está usando la app?</p>
+    <p>¿Quién anda metiendo mano a los gastos? 🤔</p>
     <div class="login-btns">
       <button class="btn-login btn-login-m" onclick="login('matias')">
         <div class="avatar av-m" style="width:28px;height:28px;font-size:12px">M</div> Matías
@@ -145,7 +179,8 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
         <div class="avatar av-b" style="width:28px;height:28px;font-size:12px">B</div> Barbra
       </button>
     </div>
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+    <div style="margin-top:14px;font-size:12px;color:var(--hint);font-style:italic">Hecho con ❤️ para los dos — de Chile a Perú</div>
+    <div style="margin-top:10px;padding-top:12px;border-top:1px solid var(--border)">
       <button style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:DM Sans,sans-serif" onclick="showModal('cfg-modal')">⚙ Configuración</button>
     </div>
   </div>
@@ -168,26 +203,29 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 
     <!-- PANEL TAB -->
     <div id="tab-content-panel">
+      <div class="help-box" id="help-panel"><div class="hb-inner"><span class="hi">🏠</span><span class="hb-txt">Resumen general de la casa. Empieza siempre aquí, Barbra.</span></div><button class="hb-close" onclick="closeHelp('panel')">×</button></div>
       <div id="alertas-box"></div>
 
       <!-- FONDO -->
       <div class="card">
-        <div class="card-title">Fondo de la casa</div>
+        <div class="card-title">💰 Fondo de la casa</div>
+        <div class="help-box" id="help-fondo"><div class="hb-inner"><span class="hi">💡</span><span class="hb-txt">Plata disponible para pagar gastos del depa. Cuando lleguen los sueldos, registra el aporte.</span></div><button class="hb-close" onclick="closeHelp('fondo')">×</button></div>
         <div class="fondo-big">
-          <div class="lbl">Disponible ahora</div>
+          <div class="lbl">Lo que queda en la bolsa, pe 👇</div>
           <div class="val" id="fondo-val">S/ 0</div>
           <div class="sub" id="fondo-sub"></div>
         </div>
         <div class="fondo-bars" id="fondo-aportes"></div>
         <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btn-blue" onclick="showModal('aporte-modal')">+ Registrar aporte</button>
-          <button class="btn btn-ghost" onclick="showModal('aporte-hist-modal')">Ver historial</button>
+          <button class="btn btn-blue" onclick="showModal('aporte-modal')">+ Poner plata al fondo</button>
+          <button class="btn btn-ghost" onclick="showModal('aporte-hist-modal')">¿Quién ha puesto más? 👀</button>
         </div>
       </div>
 
       <!-- PROYECCION -->
       <div class="card">
-        <div class="card-title">Proyección del mes</div>
+        <div class="card-title">📊 ¿Cómo vamos, causa?</div>
+        <div class="help-box" id="help-proy"><div class="hb-inner"><span class="hi">📏</span><span class="hb-txt">Azul = bien. Naranja = cuidado. Rojo = hay que hablar, pe 😬</span></div><button class="hb-close" onclick="closeHelp('proy')">×</button></div>
         <div class="metrics" id="proyeccion-metrics"></div>
         <div id="proyeccion-bar-wrap">
           <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px">
@@ -212,6 +250,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
     <div id="tab-content-gastos" style="display:none">
       <div class="card">
         <div class="card-title">Registrar gasto</div>
+        <div class="help-box" id="help-gastos-form"><div class="hb-inner"><span class="hi">✍️</span><span class="hb-txt">Escribe el gasto, el monto y quién pagó. Si salió de la cuenta de la casa, elige "Del fondo".</span></div><button class="hb-close" onclick="closeHelp('gastos-form')">×</button></div>
         <div class="form-grid" style="margin-bottom:10px">
           <div class="field"><label>Concepto</label><input id="g-concepto" placeholder="Ej: Supermercado"></div>
           <div class="field"><label>Monto (S/)</label><input type="number" id="g-monto" min="0" placeholder="0"></div>
@@ -248,13 +287,15 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
             </select>
           </div>
         </div>
-        <button class="btn btn-pri" onclick="agregarGasto()">+ Registrar gasto</button>
+        <button class="btn btn-pri" onclick="agregarGasto()">+ Anotar gasto (que duele, causa) 😬</button>
       </div>
 
       <div class="sec-divider"><span>Pendientes</span></div>
+      <div class="help-box" id="help-pending"><div class="hb-inner"><span class="hi">⏳</span><span class="hb-txt">Toca el círculo para marcar como pagado. ¡Así de fácil!</span></div><button class="hb-close" onclick="closeHelp('pending')">×</button></div>
       <div class="card"><div id="gastos-pending-list"></div></div>
 
       <div class="sec-divider"><span>Pagados</span></div>
+      <div class="help-box" id="help-paid"><div class="hb-inner"><span class="hi">✅</span><span class="hb-txt">Ya cancelados. Si te equivocaste, toca el círculo verde para revertir.</span></div><button class="hb-close" onclick="closeHelp('paid')">×</button></div>
       <div class="card"><div id="gastos-paid-list"></div></div>
     </div>
 
@@ -262,6 +303,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
     <div id="tab-content-fijos" style="display:none">
       <div class="card">
         <div class="card-title">Agregar gasto fijo</div>
+        <div class="help-box" id="help-fijos-form"><div class="hb-inner"><span class="hi">🔁</span><span class="hb-txt">Agrégalos una vez. Cada mes el botón de abajo los carga solos. ¡Prometido!</span></div><button class="hb-close" onclick="closeHelp('fijos-form')">×</button></div>
         <div class="form-grid" style="margin-bottom:10px">
           <div class="field"><label>Concepto</label><input id="f-concepto" placeholder="Ej: Alquiler"></div>
           <div class="field"><label>Monto (S/)</label><input type="number" id="f-monto" min="0" placeholder="0"></div>
@@ -281,22 +323,24 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
             </select>
           </div>
         </div>
-        <button class="btn btn-pri" onclick="agregarFijo()">+ Agregar fijo</button>
+        <button class="btn btn-pri" onclick="agregarFijo()">+ Agregar fijo (el eterno) 😮‍💨</button>
       </div>
 
       <div class="card">
-        <div class="card-title">Gastos fijos configurados</div>
+        <div class="card-title">Los infaltables 😩 (gastos fijos)</div>
+        <div class="help-box" id="help-fijos-list"><div class="hb-inner"><span class="hi">📋</span><span class="hb-txt">Si cambió algún monto, bórralo y crea uno nuevo. Toca el botón verde para cargarlos.</span></div><button class="hb-close" onclick="closeHelp('fijos-list')">×</button></div>
         <div id="fijos-list"></div>
       </div>
 
       <div style="margin-top:10px">
-        <button class="btn btn-green" onclick="generarFijosEsteMes()" style="width:100%">↓ Cargar fijos en el mes actual</button>
+        <button class="btn btn-green" onclick="generarFijosEsteMes()" style="width:100%">↓ Traer los fijos de siempre, pe</button>
       </div>
     </div>
 
     <!-- CONFIG TAB -->
     <div id="tab-content-config" style="display:none">
       <div class="card">
+        <div class="help-box" id="help-config"><div class="hb-inner"><span class="hi">🛠️</span><span class="hb-txt">Ajusta sueldos, tipo de cambio y el límite de alerta. Guarda al final.</span></div><button class="hb-close" onclick="closeHelp('config')">×</button></div>
         <div class="card-title">Aportes este mes</div>
         <div class="form-grid" style="margin-bottom:10px">
           <div class="field"><label>Aporte Matías (S/)</label><input type="number" id="cfg-ap-m" placeholder="0" oninput="saveCfgLocal()"></div>
@@ -316,7 +360,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
         </div>
         <div class="field"><label>Alerta si fondo baja de (S/)</label><input type="number" id="cfg-alerta" placeholder="500" oninput="saveCfgLocal()"></div>
       </div>
-      <button class="btn btn-pri" style="width:100%" onclick="saveCfgFirebase()">Guardar configuración para ambos</button>
+      <button class="btn btn-pri" style="width:100%" onclick="saveCfgFirebase()">Guardar para los dos (manda la ley 📜)</button>
     </div>
 
   </div>
@@ -325,7 +369,8 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 <!-- APORTE MODAL -->
 <div class="modal-overlay" id="aporte-modal">
   <div class="modal">
-    <h3>Registrar aporte al fondo</h3>
+    <h3>¡A poner la plata, po! 💸</h3>
+    <div class="help-box" id="help-aporte-modal"><div class="hb-inner"><span class="hi">💡</span><span class="hb-txt">Escribe cuánto depositó cada uno y cuándo. Eso alimenta el fondo.</span></div><button class="hb-close" onclick="closeHelp('aporte-modal')">×</button></div>
     <div class="form-grid" style="margin-bottom:10px">
       <div class="field"><label>¿Quién aporta?</label>
         <select id="ap-quien">
@@ -341,7 +386,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <div class="modal-btns">
       <button class="btn btn-ghost" onclick="hideModal('aporte-modal')">Cancelar</button>
-      <button class="btn btn-green" onclick="registrarAporte()">Confirmar aporte</button>
+      <button class="btn btn-green" onclick="registrarAporte()">¡Va la plata! 💸</button>
     </div>
   </div>
 </div>
@@ -349,7 +394,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 <!-- APORTE HISTORIAL MODAL -->
 <div class="modal-overlay" id="aporte-hist-modal">
   <div class="modal">
-    <h3>Historial de aportes</h3>
+    <h3>El historial de los que sí aportan 😂</h3>
     <div id="aporte-hist-list" style="max-height:340px;overflow-y:auto"></div>
     <div class="modal-btns">
       <button class="btn btn-ghost" onclick="hideModal('aporte-hist-modal')">Cerrar</button>
@@ -373,6 +418,26 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script>
+// ── HELP DISMISS ─────────────────────────────────────────────────────────
+const DISMISSED_KEY = 'mb_help_dismissed';
+function loadDismissed() {
+  try {
+    const d = JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]');
+    d.forEach(key => {
+      const el = document.getElementById('help-' + key);
+      if (el) el.classList.add('hidden');
+    });
+  } catch(e) {}
+}
+function closeHelp(key) {
+  const el = document.getElementById('help-' + key);
+  if (el) el.classList.add('hidden');
+  try {
+    const d = JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]');
+    if (!d.includes(key)) { d.push(key); localStorage.setItem(DISMISSED_KEY, JSON.stringify(d)); }
+  } catch(e) {}
+}
+
 // ── FIREBASE ──────────────────────────────────────────────────────────────
 const FB_CFG = {
   apiKey: "AIzaSyBvEh2P37a9wZXRkYvnq0Cvl3TekuQommo",
@@ -452,6 +517,7 @@ function login(who) {
   document.getElementById('g-fecha').value = fechaHoy();
   document.getElementById('ap-fecha').value = fechaHoy();
   mesActivo = mesActual();
+  loadDismissed();
   listenAll();
 }
 function logout() {
@@ -499,7 +565,7 @@ function saveCfgLocal() {
 async function saveCfgFirebase() {
   saveCfgLocal();
   if (db) await db.ref('config').set(cfg);
-  showToast('Configuración guardada para ambos');
+  showToast('Configuración guardada. Los dos mandan acá 👑❤️');
 }
 
 // ── FONDO CALC ────────────────────────────────────────────────────────────
@@ -573,10 +639,10 @@ function renderPanel() {
 
   // Alertas
   let alertHtml = '';
-  if (fondo < 0) alertHtml += '<div class="alert alert-bad">🚨 El fondo está en negativo — ' + fmt(Math.abs(fondo)) + ' en descubierto</div>';
-  else if (fondo < cfg.alerta) alertHtml += '<div class="alert alert-warn">⚠️ El fondo está bajo el límite mínimo de ' + fmt(cfg.alerta) + '</div>';
-  if (totalPendiente > fondo && fondo >= 0) alertHtml += '<div class="alert alert-warn">⚠️ Los gastos pendientes (' + fmt(totalPendiente) + ') superan el fondo disponible</div>';
-  if (!alertHtml) alertHtml = '<div class="alert alert-ok">✓ Todo en orden — el fondo cubre los gastos pendientes del mes</div>';
+  if (fondo < 0) alertHtml += '<div class="alert alert-bad">🚨 ¡Choche, estamos en rojo! Debemos ' + fmt(Math.abs(fondo)) + ' y nadie quiere eso, pe</div>';
+  else if (fondo < cfg.alerta) alertHtml += '<div class="alert alert-warn">⚠️ Ojo causa, el fondo está más flaco que perro de feria. Quedan menos de ' + fmt(cfg.alerta) + '</div>';
+  if (totalPendiente > fondo && fondo >= 0) alertHtml += '<div class="alert alert-warn">⚠️ Houston, tenemos un problema 🚀 Los gastos pendientes (' + fmt(totalPendiente) + ') están ganando al fondo. ¡A poner plata, po!</div>';
+  if (!alertHtml) alertHtml = '<div class="alert alert-ok">✓ ¡Todo bacán, causa! El fondo aguanta el mes. ¡Brillante equipo! 🥰</div>';
   document.getElementById('alertas-box').innerHTML = alertHtml;
 
   // Proyección
@@ -596,7 +662,7 @@ function renderPanel() {
   // Recientes
   const todos = Object.values(allGastos[mesActivo] || {}).sort((a,b) => b.ts - a.ts).slice(0,5);
   document.getElementById('recientes-list').innerHTML = todos.length === 0
-    ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Sin movimientos este mes</div>'
+    ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Sin movimientos este mes. ¿Están viviendo del aire, bacán? 🌬️</div>'
     : todos.map(g => gastoItemHtml(g)).join('');
 }
 
@@ -620,14 +686,14 @@ function renderGastosList() {
   const paid = gastos.filter(g => g.estado === 'paid');
   const pendEl = document.getElementById('gastos-pending-list');
   const paidEl = document.getElementById('gastos-paid-list');
-  pendEl.innerHTML = pending.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Sin gastos pendientes 🎉</div>' : pending.map(g => gastoItemHtml(g)).join('');
-  paidEl.innerHTML = paid.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Ningún gasto pagado aún</div>' : paid.map(g => gastoItemHtml(g)).join('');
+  pendEl.innerHTML = pending.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Cero gastos pendientes, causa. ¡Estamos al día, pe! 🎉</div>' : pending.map(g => gastoItemHtml(g)).join('');
+  paidEl.innerHTML = paid.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Nadie ha pagado nada todavía... esto va a doler, amigo 😬</div>' : paid.map(g => gastoItemHtml(g)).join('');
 }
 
 function renderFijos() {
   const fijos = Object.values(allFijos).sort((a,b) => a.concepto.localeCompare(b.concepto));
   const el = document.getElementById('fijos-list');
-  if (fijos.length === 0) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">No hay gastos fijos configurados</div>'; return; }
+  if (fijos.length === 0) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">No hay gastos fijos. Ojalá fuera así en la vida real, causa 🙏</div>'; return; }
   el.innerHTML = fijos.map(f =>
     '<div class="gasto-item">'
     + '<div class="gasto-info"><div class="gi-name">' + f.concepto + '</div>'
@@ -654,7 +720,7 @@ async function agregarGasto() {
   mesActivo = mes;
   document.getElementById('g-concepto').value = '';
   document.getElementById('g-monto').value = '';
-  showToast('Gasto registrado');
+  showToast('Gasto anotado, pe 📝 Barbra ya sabe jaja');
 }
 
 async function toggleEstado(id, mes) {
@@ -681,7 +747,7 @@ async function agregarFijo() {
   if (db) await db.ref('fijos/'+f.id).set(f);
   document.getElementById('f-concepto').value = '';
   document.getElementById('f-monto').value = '';
-  showToast('Gasto fijo agregado');
+  showToast('Fijo agregado. Ese no se escapa nunca, causa 😤');
 }
 
 async function eliminarFijo(id) {
@@ -699,7 +765,7 @@ async function generarFijosEsteMes() {
     if (db) await db.ref('gastos/'+mes+'/'+g.id).set(g);
     count++;
   }
-  showToast(count + ' gastos fijos cargados en ' + labelMes(mes));
+  showToast('¡Listos los fijos, po! ' + count + ' gastos cargados en ' + labelMes(mes) + ' 💪');
   switchTab('gastos');
 }
 
@@ -716,7 +782,7 @@ async function registrarAporte() {
   hideModal('aporte-modal');
   document.getElementById('ap-monto').value = '';
   document.getElementById('ap-nota').value = '';
-  showToast('Aporte registrado — ' + fmt(monto) + ' de ' + (quien==='matias'?'Matías':'Barbra'));
+  showToast('¡Llegó la plata! +' + fmt(monto) + ' de ' + (quien==='matias'?'Matías (eres lo máximo, amor 💙)':'Barbra (la más bacán del barrio 💚)'));
 
   // Show historial
   renderAporteHist();
@@ -729,7 +795,7 @@ function renderAporteHist() {
   });
   all.sort((a,b) => b.ts - a.ts);
   const el = document.getElementById('aporte-hist-list');
-  el.innerHTML = all.length === 0 ? '<p style="color:var(--hint);font-size:13px;text-align:center;padding:20px">Sin aportes registrados</p>' :
+  el.innerHTML = all.length === 0 ? '<p style="color:var(--hint);font-size:13px;text-align:center;padding:20px">Sin aportes. ¿Dónde está la platita, po? 🫙</p>' :
     all.map(a => '<div class="gasto-item">'
       + '<div class="avatar ' + (a.quien==='matias'?'av-m':'av-b') + '" style="width:28px;height:28px;font-size:11px;flex-shrink:0">' + (a.quien==='matias'?'M':'B') + '</div>'
       + '<div class="gasto-info"><div class="gi-name">' + (a.quien==='matias'?'Matías':'Barbra') + (a.nota?' · '+a.nota:'') + '</div><div class="gi-sub">' + labelMes(a.mes) + ' · ' + a.fecha.substring(5) + '</div></div>'
