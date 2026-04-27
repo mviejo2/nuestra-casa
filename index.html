@@ -569,19 +569,21 @@ async function saveCfgFirebase() {
 
 // ── FONDO CALC ────────────────────────────────────────────────────────────
 function calcFondo() {
-  // Sum all aportes ever
+  // Aportes totales al fondo
   let totalAportes = 0;
   Object.values(allAportes).forEach(mesAp => {
     Object.values(mesAp).forEach(a => { totalAportes += a.monto; });
   });
-  // Subtract all paid gastos from fondo (those paid from fondo)
-  let totalGastadoFondo = 0;
+  // Restar todos los gastos compartidos ya pagados (independiente de quién pagó)
+  // Si lo pagó Barbra o Matías de su bolsillo, igual sale del fondo conceptualmente
+  let totalGastado = 0;
   Object.values(allGastos).forEach(mesG => {
     Object.values(mesG).forEach(g => {
-      if (g.estado === 'paid' && g.pagador === 'fondo') totalGastadoFondo += g.monto;
+      if (g.estado === 'paid' && g.tipo === 'shared') totalGastado += g.monto;
+      // Gastos solo de uno no afectan el fondo común
     });
   });
-  return totalAportes - totalGastadoFondo;
+  return totalAportes - totalGastado;
 }
 
 function calcMesActivo() {
@@ -626,7 +628,7 @@ function renderPanel() {
   document.getElementById('fondo-val').textContent = fmt(fondo);
   document.getElementById('fondo-val').style.color = fondoColor;
   const fondoSubTxt = fondo < 0
-    ? '🚨 Fondo en negativo · Pendiente: ' + fmt(totalPendiente)
+    ? '🚨 Fondo en negativo ' + fmt(Math.abs(fondo)) + ' · Pendiente: ' + fmt(totalPendiente)
     : 'Disponible · Pendiente por pagar: ' + fmt(totalPendiente);
   document.getElementById('fondo-sub').textContent = fondoSubTxt;
 
