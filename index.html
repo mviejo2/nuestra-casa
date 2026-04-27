@@ -148,6 +148,9 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .sticker-overlay .sticker-tap{color:rgba(255,255,255,.5);font-size:12px;margin-top:12px;letter-spacing:.03em}
 .logro-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:var(--text);color:#fff;border-radius:var(--radius);padding:22px 30px;font-size:16px;font-weight:500;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:998;box-shadow:0 8px 40px rgba(0,0,0,.3);max-width:85vw;line-height:1.5}
 .logro-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* PROPORCION BTNS */
+.prop-btn{background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;color:var(--muted);transition:all .15s;white-space:nowrap}
+.prop-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
 /* CUENTAS */
 .deuda-box{border-radius:var(--radius);padding:16px;margin-bottom:12px;text-align:center}
 .deuda-box.cero{background:var(--green-light);border:1.5px solid #BBF7D0}
@@ -332,11 +335,26 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
             </select>
           </div>
           <div class="field"><label>Tipo</label>
-            <select id="g-tipo">
+            <select id="g-tipo" onchange="togglePropField()">
               <option value="shared">Compartido</option>
               <option value="matias">Solo Matías</option>
               <option value="barbra">Solo Barbra</option>
             </select>
+          </div>
+        </div>
+        <div id="prop-field" style="margin-bottom:14px">
+          <label style="font-size:13px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px">Proporción — Matías % / Barbra %</label>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button type="button" class="prop-btn active" onclick="setProp(50,50)" id="prop-50">50 / 50</button>
+            <button type="button" class="prop-btn" onclick="setProp(60,40)" id="prop-60">60 / 40</button>
+            <button type="button" class="prop-btn" onclick="setProp(65,35)" id="prop-65">65 / 35</button>
+            <button type="button" class="prop-btn" onclick="setProp(100,0)" id="prop-100">100 / 0</button>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+            <input type="number" id="g-prop-m" value="50" min="0" max="100" style="width:70px;padding:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;text-align:center;background:var(--bg)" oninput="syncPropB()">
+            <span style="color:var(--muted);font-weight:600">%  Mat. /</span>
+            <input type="number" id="g-prop-b" value="50" min="0" max="100" style="width:70px;padding:8px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;text-align:center;background:var(--bg)" oninput="syncPropM()">
+            <span style="color:var(--muted);font-weight:600">% Bar.</span>
           </div>
         </div>
         <button class="btn btn-pri" onclick="agregarGasto()">+ Anotar gasto (que duele, causa) 😬</button>
@@ -813,41 +831,57 @@ async function saveCfgFirebase() {
 
 // ── FONDO CALC ────────────────────────────────────────────────────────────
 function calcFondo() {
-  // Fondo = aportes - gastos pagados SOLO del fondo
-  // Los gastos pagados de bolsillo (matias/barbra) NO afectan el fondo
-  // generan una deuda entre personas, que se maneja por separado en calcDeuda()
+  // Fondo = aportes normales - gastos del fondo - saldos pagados DESDE el fondo
+  // Los gastos de bolsillo (matias/barbra) NO tocan el fondo — generan deuda personal
   let totalAportes = 0;
+  let totalSaldadoFondo = 0;
+
   Object.values(allAportes).forEach(mesAp => {
     Object.values(mesAp).forEach(a => {
-      if (!a.tipo || a.tipo !== 'saldar') totalAportes += a.monto;
+      if (!a.tipo || a.tipo !== 'saldar') {
+        totalAportes += a.monto;
+      } else if (a.tipo === 'saldar' && a.origen === 'fondo') {
+        // Este saldar salió del fondo → lo descuenta
+        totalSaldadoFondo += a.monto;
+      }
     });
   });
 
   let totalGastadoFondo = 0;
   Object.values(allGastos).forEach(mesG => {
     Object.values(mesG).forEach(g => {
-      // Solo descontar del fondo si el pagador es 'fondo'
       if (g.estado === 'paid' && g.pagador === 'fondo') totalGastadoFondo += g.monto;
-      // Si pagador es matias/barbra → es deuda personal, no toca el fondo
     });
   });
 
-  return totalAportes - totalGastadoFondo;
+  return totalAportes - totalGastadoFondo - totalSaldadoFondo;
 }
 
 function calcMesActivo() {
   const gastosMes = Object.values(allGastos[mesActivo] || {});
-  let totalPendiente = 0, totalPagado = 0, totalFondoUsado = 0, totalBolsillo = 0;
+  let totalPendiente = 0;
+  let totalPagadoFondo = 0;   // pagados del fondo
+  let totalPagadoBolsillo = 0; // pagados de bolsillo (generan deuda)
+  let totalPendienteFondo = 0; // pendientes que irán del fondo
+  let totalPendienteBolsillo = 0; // pendientes de bolsillo
+
   gastosMes.forEach(g => {
     if (g.estado === 'pending') {
       totalPendiente += g.monto;
+      if (g.pagador === 'fondo') totalPendienteFondo += g.monto;
+      else totalPendienteBolsillo += g.monto;
     } else {
-      totalPagado += g.monto;
-      if (g.pagador === 'fondo') totalFondoUsado += g.monto;
-      else if (g.pagador === 'matias' || g.pagador === 'barbra') totalBolsillo += g.monto;
+      if (g.pagador === 'fondo') totalPagadoFondo += g.monto;
+      else if (g.pagador === 'matias' || g.pagador === 'barbra') totalPagadoBolsillo += g.monto;
     }
   });
-  return { gastosMes, totalPendiente, totalPagado, totalFondoUsado, totalBolsillo };
+
+  const totalPagado = totalPagadoFondo + totalPagadoBolsillo;
+  return {
+    gastosMes,
+    totalPendiente, totalPendienteFondo, totalPendienteBolsillo,
+    totalPagado, totalPagadoFondo, totalPagadoBolsillo
+  };
 }
 
 // ── RENDER ALL ────────────────────────────────────────────────────────────
@@ -874,20 +908,23 @@ function renderMeses() {
 
 function renderPanel() {
   const fondo = calcFondo();
-  const { totalPendiente, totalPagado } = calcMesActivo();
+  const mes = calcMesActivo();
   const { pM, pB } = calcPct();
-  const gastosMes = Object.values(allGastos[mesActivo] || {});
+  const deuda = calcDeuda();
+  const { totalPendiente, totalPagado, totalPagadoFondo, totalPagadoBolsillo, totalPendienteFondo } = mes;
 
   // Fondo card
   const fondoColor = fondo < 0 ? 'var(--red)' : fondo < cfg.alerta ? 'var(--amber)' : 'var(--green)';
   document.getElementById('fondo-val').textContent = fmt(fondo);
   document.getElementById('fondo-val').style.color = fondoColor;
-  const { totalBolsillo } = calcMesActivo();
-  const fondoSubTxt = fondo < 0
-    ? '🚨 Fondo en negativo · Pendiente: ' + fmt(totalPendiente)
-    : totalBolsillo > 0
-      ? 'Disponible · S/ ' + Math.round(totalBolsillo).toLocaleString('es-PE') + ' pagados de bolsillo'
-      : 'Disponible · Pendiente por pagar: ' + fmt(totalPendiente);
+  let fondoSubTxt = '';
+  if (fondo < 0) {
+    fondoSubTxt = '🚨 Fondo en negativo · Pendiente del fondo: ' + fmt(totalPendienteFondo);
+  } else if (totalPagadoBolsillo > 0) {
+    fondoSubTxt = 'Disponible · ' + fmt(totalPagadoBolsillo) + ' pagados de bolsillo';
+  } else {
+    fondoSubTxt = 'Disponible · Pendiente del fondo: ' + fmt(totalPendienteFondo);
+  }
   document.getElementById('fondo-sub').textContent = fondoSubTxt;
 
   // Aportes mes
@@ -907,19 +944,19 @@ function renderPanel() {
   if (!alertHtml) alertHtml = '<div class="alert alert-ok">✓ ¡Todo bacán! ' + mensajito('ok') + '</div>';
   document.getElementById('alertas-box').innerHTML = alertHtml;
 
-  // Proyección
-  const totalMes = totalPendiente + totalPagado;
-  const pct = apTotal > 0 ? Math.min(100, Math.round(totalMes / apTotal * 100)) : 0;
+  // Proyección — solo cuenta gastos del fondo, no de bolsillo
+  const totalMesFondo = totalPendienteFondo + totalPagadoFondo;
+  const pct = apTotal > 0 ? Math.min(100, Math.round(totalMesFondo / apTotal * 100)) : 0;
   const barColor = pct > 90 ? 'var(--red)' : pct > 70 ? 'var(--amber)' : 'var(--blue)';
   document.getElementById('proyeccion-metrics').innerHTML =
-    '<div class="metric"><div class="m-lbl">Aportes este mes</div><div class="m-val">' + fmt(apTotal) + '</div></div>' +
-    '<div class="metric"><div class="m-lbl">Pagado</div><div class="m-val" style="color:var(--green)">' + fmt(totalPagado) + '</div></div>' +
-    '<div class="metric"><div class="m-lbl">Pendiente</div><div class="m-val" style="color:var(--amber)">' + fmt(totalPendiente) + '</div></div>' +
-    '<div class="metric"><div class="m-lbl">Disponible en fondo</div><div class="m-val" style="color:' + fondoColor + ';font-weight:700">' + fmt(fondo) + '</div><div class="m-sub">' + (fondo < 0 ? '⚠ En descubierto' : 'Listo para usar') + '</div></div>';
+    '<div class="metric"><div class="m-lbl">Aportes al fondo</div><div class="m-val">' + fmt(apTotal) + '</div></div>' +
+    '<div class="metric"><div class="m-lbl">Pagado del fondo</div><div class="m-val" style="color:var(--green)">' + fmt(totalPagadoFondo) + '</div></div>' +
+    '<div class="metric"><div class="m-lbl">De bolsillo</div><div class="m-val" style="color:var(--blue)">' + fmt(totalPagadoBolsillo) + '</div><div class="m-sub">genera deuda</div></div>' +
+    '<div class="metric"><div class="m-lbl">Fondo disponible</div><div class="m-val" style="color:' + fondoColor + ';font-weight:700">' + fmt(fondo) + '</div><div class="m-sub">' + (fondo < 0 ? '⚠ En descubierto' : 'Listo') + '</div></div>';
   document.getElementById('proy-bar').style.width = pct + '%';
   document.getElementById('proy-bar').style.background = barColor;
   document.getElementById('proy-pct-lbl').textContent = pct + '%';
-  document.getElementById('proy-detail').textContent = fmt(totalMes) + ' de ' + fmt(apTotal) + ' en aportes de este mes';
+  document.getElementById('proy-detail').textContent = fmt(totalMesFondo) + ' en gastos del fondo de ' + fmt(apTotal) + ' aportados';
 
   // Recientes
   const todos = Object.values(allGastos[mesActivo] || {}).sort((a,b) => b.ts - a.ts).slice(0,5);
@@ -977,7 +1014,9 @@ async function agregarGasto() {
   const tipo = document.getElementById('g-tipo').value;
   if (!concepto || !monto) { alert('Completa concepto y monto'); return; }
   const mes = fecha.substring(0,7);
-  const g = { id: 'g'+Date.now(), concepto, monto, cat, pagador, fecha, estado, tipo, quien: currentUser, mes, fijo: false, ts: Date.now() };
+  const propM = tipo === 'shared' ? Math.min(100, Math.max(0, +document.getElementById('g-prop-m').value || 50)) : (tipo === 'matias' ? 100 : 0);
+  const propB = 100 - propM;
+  const g = { id: 'g'+Date.now(), concepto, monto, cat, pagador, fecha, estado, tipo, propM, propB, quien: currentUser, mes, fijo: false, ts: Date.now() };
   if (db) await db.ref('gastos/'+mes+'/'+g.id).set(g);
   mesActivo = mes;
   document.getElementById('g-concepto').value = '';
@@ -1095,14 +1134,14 @@ function calcDeuda() {
   Object.values(allGastos).forEach(mesG => {
     Object.values(mesG).forEach(g => {
       if (g.tipo !== 'shared' || g.estado !== 'paid') return;
+      // Use per-gasto proportion if set, otherwise fall back to global
+      const gPropM = (g.propM !== undefined && g.propM !== null) ? g.propM/100 : pM;
+      const gPropB = 1 - gPropM;
       if (g.pagador === 'barbra') {
-        // Barbra pagó el total → Matías le debe su % proporcional
-        saldo += g.monto * pM;
+        saldo += g.monto * gPropM;
       } else if (g.pagador === 'matias') {
-        // Matías pagó el total → Barbra le debe su % proporcional
-        saldo -= g.monto * pB;
+        saldo -= g.monto * gPropB;
       }
-      // pagador === 'fondo' → no genera deuda entre personas
     });
   });
 
@@ -1139,27 +1178,42 @@ function renderCuentas() {
     btnHtml = '<div class="deuda-btn-row"><button class="btn btn-blue" data-quien="barbra" onclick="abrirSaldarEl(this)">Saldar desde fondo o directo</button></div>';
   }
 
-  // Detalle de gastos que generan deuda
-  const gastosList = [];
+  // Detalle de gastos pagados que generan deuda
+  const gastosDeuda = [];
+  const gastosPendienteBolsillo = [];
   Object.values(allGastos).forEach(mesG => {
     Object.values(mesG).forEach(g => {
-      if (g.tipo === 'shared' && g.estado === 'paid' && (g.pagador === 'barbra' || g.pagador === 'matias')) {
-        gastosList.push(g);
+      if (g.tipo !== 'shared') return;
+      if ((g.pagador === 'barbra' || g.pagador === 'matias')) {
+        if (g.estado === 'paid') gastosDeuda.push(g);
+        else gastosPendienteBolsillo.push(g);
       }
     });
   });
-  gastosList.sort((a,b) => b.ts - a.ts);
+  gastosDeuda.sort((a,b) => b.ts - a.ts);
 
   let detalleHtml = '';
-  if (gastosList.length > 0) {
-    detalleHtml = '<div class="deuda-detalle">';
-    gastosList.slice(0,5).forEach(g => {
+
+  // Warn about pending bolsillo gastos
+  if (gastosPendienteBolsillo.length > 0) {
+    const totalPendBolsillo = gastosPendienteBolsillo.reduce((s,g) => s+g.monto, 0);
+    detalleHtml += '<div class="alert alert-warn" style="margin-bottom:10px;font-size:13px">⏳ ' + gastosPendienteBolsillo.length + ' gasto(s) de bolsillo por pagar (' + fmt(totalPendBolsillo) + ') — generarán deuda al marcarse como pagados</div>';
+  }
+
+  if (gastosDeuda.length > 0) {
+    detalleHtml += '<div class="deuda-detalle">';
+    gastosDeuda.slice(0,5).forEach(g => {
+      const gPropM = g.propM !== undefined ? g.propM : Math.round(pM*100);
+      const gPropB = 100 - gPropM;
       const quien = g.pagador === 'barbra' ? 'Pagó Barbra' : 'Pagó Matías';
       const color = g.pagador === 'barbra' ? 'var(--barbra)' : 'var(--matias)';
-      detalleHtml += '<div class="dd-row"><span><span style="color:' + color + ';font-weight:600">' + quien + '</span> · ' + g.concepto + '</span><span style="font-weight:600">' + fmt(g.monto) + '</span></div>';
+      const proporcion = g.tipo === 'shared' ? ' <span style="color:var(--hint);font-size:11px">(' + gPropM + '/' + gPropB + ')</span>' : '';
+      detalleHtml += '<div class="dd-row"><span><span style="color:' + color + ';font-weight:600">' + quien + '</span>' + proporcion + ' · ' + g.concepto + '</span><span style="font-weight:600">' + fmt(g.monto) + '</span></div>';
     });
-    if (gastosList.length > 5) detalleHtml += '<div style="text-align:center;padding-top:6px;font-size:12px;color:var(--hint)">+ ' + (gastosList.length-5) + ' más</div>';
+    if (gastosDeuda.length > 5) detalleHtml += '<div style="text-align:center;padding-top:6px;font-size:12px;color:var(--hint)">+ ' + (gastosDeuda.length-5) + ' más</div>';
     detalleHtml += '</div>';
+  } else if (gastosPendienteBolsillo.length === 0 && abs < 1) {
+    detalleHtml += '<div style="text-align:center;padding:12px;color:var(--hint);font-size:13px">Sin gastos de bolsillo este historial</div>';
   }
 
   el.innerHTML = boxHtml + btnHtml + detalleHtml;
@@ -1192,19 +1246,8 @@ async function confirmarSaldar() {
     ts: Date.now()
   };
 
-  if (origen === 'fondo') {
-    // Register as a gasto from fondo to reduce fondo balance
-    const g = {
-      id: 'g' + Date.now(),
-      concepto: 'Saldar deuda' + (nota ? ' · ' + nota : ''),
-      monto, cat: 'otro', pagador: 'fondo',
-      fecha, estado: 'paid', tipo: 'shared',
-      quien: currentUser, mes, fijo: false, ts: Date.now()
-    };
-    if (db) await db.ref('gastos/' + mes + '/' + g.id).set(g);
-  }
-
-  // Register the saldar payment
+  // Register the saldar - works for both fondo and directo
+  // calcFondo handles fondo saldos, calcDeuda handles deuda saldos
   if (db) await db.ref('aportes/' + mes + '/' + pago.id).set(pago);
   else {
     if (!allAportes[mes]) allAportes[mes] = {};
@@ -1214,6 +1257,37 @@ async function confirmarSaldar() {
   hideModal('saldar-modal');
   showSticker('ambos', '✓ ¡Deuda saldada! Los dos contentos 🎉');
   showToast('Deuda saldada — ' + fmt(monto) + ' ' + (origen==='fondo'?'del fondo':'pago directo'));
+}
+
+// ── PROPORCION POR GASTO ─────────────────────────────────────────────────
+function togglePropField() {
+  const tipo = document.getElementById('g-tipo').value;
+  document.getElementById('prop-field').style.display = tipo === 'shared' ? 'block' : 'none';
+}
+function setProp(m, b) {
+  document.getElementById('g-prop-m').value = m;
+  document.getElementById('g-prop-b').value = b;
+  // Update active button
+  ['50','60','65','100'].forEach(v => {
+    const btn = document.getElementById('prop-' + v);
+    if (btn) btn.classList.toggle('active', parseInt(v) === m);
+  });
+}
+function syncPropB() {
+  const m = Math.min(100, Math.max(0, +document.getElementById('g-prop-m').value || 0));
+  document.getElementById('g-prop-b').value = 100 - m;
+  updateActivePropBtn(m);
+}
+function syncPropM() {
+  const b = Math.min(100, Math.max(0, +document.getElementById('g-prop-b').value || 0));
+  document.getElementById('g-prop-m').value = 100 - b;
+  updateActivePropBtn(100 - b);
+}
+function updateActivePropBtn(m) {
+  ['50','60','65','100'].forEach(v => {
+    const btn = document.getElementById('prop-' + v);
+    if (btn) btn.classList.toggle('active', parseInt(v) === m);
+  });
 }
 
 // ── WRAPPERS (data-attribute approach to avoid quote escaping) ────────────
