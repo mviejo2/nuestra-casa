@@ -23,21 +23,21 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .user-pill:hover{background:var(--border)}
 .avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff}
 .av-m{background:var(--matias)}.av-b{background:var(--barbra)}
-.main{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+.main{max-width:860px;margin:0 auto;padding:20px 18px 90px}
 /* TABS */
 .nav-tabs{display:flex;gap:0;background:var(--surface);border-top:1px solid var(--border);position:fixed;bottom:0;left:0;right:0;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -2px 20px rgba(0,0,0,.08)}
-.nav-tab{flex:1;text-align:center;padding:10px 4px 8px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:none;font-family:"DM Sans",sans-serif;transition:all .2s;min-height:56px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;gap:4px}
-.nav-tab .tab-icon{font-size:22px;line-height:1;transition:transform .2s}
-.nav-tab .tab-lbl{font-size:11px;font-weight:600;line-height:1}
+.nav-tab{flex:1;text-align:center;padding:10px 4px 10px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:none;font-family:"DM Sans",sans-serif;transition:all .2s;min-height:62px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;gap:5px}
+.nav-tab .tab-icon{font-size:24px;line-height:1;transition:transform .2s}
+.nav-tab .tab-lbl{font-size:12px;font-weight:700;line-height:1}
 .nav-tab.active{color:var(--blue)}
 .nav-tab.active .tab-icon{transform:scale(1.15)}
 /* CARDS */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
 .card-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
 /* FONDO CARD */
 .fondo-big{text-align:center;padding:10px 0 14px}
 .fondo-big .lbl{font-size:14px;color:var(--muted);margin-bottom:6px;font-weight:500}
-.fondo-big .val{font-size:42px;font-weight:300;font-family:"DM Serif Display",serif;letter-spacing:-1px}
+.fondo-big .val{font-size:48px;font-weight:300;font-family:"DM Serif Display",serif;letter-spacing:-2px}
 .fondo-big .sub{font-size:13px;color:var(--muted);margin-top:6px}
 .fondo-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .fondo-bar-item .fb-lbl{font-size:14px;font-weight:600;display:flex;justify-content:space-between;margin-bottom:4px}
@@ -51,22 +51,22 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 /* METRICS */
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
 .metric{background:var(--bg);border-radius:var(--radius-sm);padding:12px}
-.metric .m-lbl{font-size:13px;color:var(--muted);margin-bottom:4px;font-weight:500}
-.metric .m-val{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.metric .m-lbl{font-size:14px;color:var(--muted);margin-bottom:5px;font-weight:600}
+.metric .m-val{font-size:26px;font-weight:800;letter-spacing:-.8px}
 .metric .m-sub{font-size:12px;color:var(--hint);margin-top:3px}
 /* GASTO ITEMS */
-.gasto-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.gasto-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
 .gasto-item:last-child{border-bottom:none}
-.gasto-check{width:36px;height:36px;border-radius:10px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:18px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.gasto-check{width:40px;height:40px;border-radius:12px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:20px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .gasto-check.paid{background:var(--green);border-color:var(--green);color:#fff}
 .gasto-check.pending{background:var(--surface)}
 .gasto-info{flex:1;min-width:0}
-.gasto-info .gi-name{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gasto-info .gi-sub{font-size:13px;color:var(--muted);margin-top:3px}
+.gasto-info .gi-name{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gasto-info .gi-sub{font-size:14px;color:var(--muted);margin-top:4px}
 .gasto-right{text-align:right;flex-shrink:0}
-.gasto-right .gr-monto{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.gasto-right .gr-monto{font-size:18px;font-weight:800;letter-spacing:-.5px}
 .gasto-right .gr-sub{font-size:12px;color:var(--muted);margin-top:2px}
-.badge{font-size:11px;padding:3px 9px;border-radius:10px;font-weight:600}
+.badge{font-size:12px;padding:4px 10px;border-radius:10px;font-weight:600}
 .badge-fijo{background:#F3E8FF;color:#7C3AED}
 .badge-var{background:var(--blue-light);color:var(--blue)}
 .badge-pending{background:var(--amber-light);color:var(--amber)}
@@ -118,7 +118,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .month-tab{font-size:14px;padding:9px 18px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;background:none;color:var(--muted);font-family:"DM Sans",sans-serif;font-weight:600;min-height:44px;-webkit-tap-highlight-color:transparent}
 .month-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
 /* SECTION */
-.sec-divider{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:20px 0 12px;display:flex;align-items:center;justify-content:space-between}
+.sec-divider{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin:22px 0 14px;display:flex;align-items:center;justify-content:space-between}
 /* TOOLTIPS / HELP */
 .help-box{background:var(--amber-light);border:1px solid #FDE68A;border-radius:var(--radius-sm);padding:10px 13px;font-size:13px;color:#92400E;margin-bottom:12px;line-height:1.5;display:flex;gap:8px;align-items:center;justify-content:space-between}
 .help-box .hb-inner{display:flex;gap:8px;align-items:center;flex:1;min-width:0}
@@ -813,32 +813,41 @@ async function saveCfgFirebase() {
 
 // ── FONDO CALC ────────────────────────────────────────────────────────────
 function calcFondo() {
-  // Aportes totales al fondo
+  // Fondo = aportes - gastos pagados SOLO del fondo
+  // Los gastos pagados de bolsillo (matias/barbra) NO afectan el fondo
+  // generan una deuda entre personas, que se maneja por separado en calcDeuda()
   let totalAportes = 0;
   Object.values(allAportes).forEach(mesAp => {
-    Object.values(mesAp).forEach(a => { totalAportes += a.monto; });
-  });
-  // Restar todos los gastos compartidos ya pagados (independiente de quién pagó)
-  // Si lo pagó Barbra o Matías de su bolsillo, igual sale del fondo conceptualmente
-  let totalGastado = 0;
-  Object.values(allGastos).forEach(mesG => {
-    Object.values(mesG).forEach(g => {
-      if (g.estado === 'paid' && g.tipo === 'shared') totalGastado += g.monto;
-      // Gastos solo de uno no afectan el fondo común
+    Object.values(mesAp).forEach(a => {
+      if (!a.tipo || a.tipo !== 'saldar') totalAportes += a.monto;
     });
   });
-  return totalAportes - totalGastado;
+
+  let totalGastadoFondo = 0;
+  Object.values(allGastos).forEach(mesG => {
+    Object.values(mesG).forEach(g => {
+      // Solo descontar del fondo si el pagador es 'fondo'
+      if (g.estado === 'paid' && g.pagador === 'fondo') totalGastadoFondo += g.monto;
+      // Si pagador es matias/barbra → es deuda personal, no toca el fondo
+    });
+  });
+
+  return totalAportes - totalGastadoFondo;
 }
 
 function calcMesActivo() {
   const gastosMes = Object.values(allGastos[mesActivo] || {});
-  const { pM, pB } = calcPct();
-  let totalPendiente = 0, totalPagado = 0, totalFondoUsado = 0;
+  let totalPendiente = 0, totalPagado = 0, totalFondoUsado = 0, totalBolsillo = 0;
   gastosMes.forEach(g => {
-    if (g.estado === 'pending') totalPendiente += g.monto;
-    else { totalPagado += g.monto; if (g.pagador === 'fondo') totalFondoUsado += g.monto; }
+    if (g.estado === 'pending') {
+      totalPendiente += g.monto;
+    } else {
+      totalPagado += g.monto;
+      if (g.pagador === 'fondo') totalFondoUsado += g.monto;
+      else if (g.pagador === 'matias' || g.pagador === 'barbra') totalBolsillo += g.monto;
+    }
   });
-  return { gastosMes, totalPendiente, totalPagado, totalFondoUsado };
+  return { gastosMes, totalPendiente, totalPagado, totalFondoUsado, totalBolsillo };
 }
 
 // ── RENDER ALL ────────────────────────────────────────────────────────────
@@ -873,9 +882,12 @@ function renderPanel() {
   const fondoColor = fondo < 0 ? 'var(--red)' : fondo < cfg.alerta ? 'var(--amber)' : 'var(--green)';
   document.getElementById('fondo-val').textContent = fmt(fondo);
   document.getElementById('fondo-val').style.color = fondoColor;
+  const { totalBolsillo } = calcMesActivo();
   const fondoSubTxt = fondo < 0
-    ? '🚨 Fondo en negativo ' + fmt(Math.abs(fondo)) + ' · Pendiente: ' + fmt(totalPendiente)
-    : 'Disponible · Pendiente por pagar: ' + fmt(totalPendiente);
+    ? '🚨 Fondo en negativo · Pendiente: ' + fmt(totalPendiente)
+    : totalBolsillo > 0
+      ? 'Disponible · S/ ' + Math.round(totalBolsillo).toLocaleString('es-PE') + ' pagados de bolsillo'
+      : 'Disponible · Pendiente por pagar: ' + fmt(totalPendiente);
   document.getElementById('fondo-sub').textContent = fondoSubTxt;
 
   // Aportes mes
@@ -1075,29 +1087,30 @@ function switchTab(tab) {
 
 // ── CUENTAS / DEUDAS ─────────────────────────────────────────────────────
 function calcDeuda() {
-  // Positive = Matías le debe a Barbra, Negative = Barbra le debe a Matías
+  // Positive = Matías le debe a Barbra
+  // Negative = Barbra le debe a Matías
   const {pM, pB} = calcPct();
   let saldo = 0;
 
-  // Gastos compartidos pagados por uno de los dos de su bolsillo
   Object.values(allGastos).forEach(mesG => {
     Object.values(mesG).forEach(g => {
       if (g.tipo !== 'shared' || g.estado !== 'paid') return;
       if (g.pagador === 'barbra') {
-        // Barbra pagó todo → Matías le debe su proporción
+        // Barbra pagó el total → Matías le debe su % proporcional
         saldo += g.monto * pM;
       } else if (g.pagador === 'matias') {
-        // Matías pagó todo → Barbra le debe su proporción
+        // Matías pagó el total → Barbra le debe su % proporcional
         saldo -= g.monto * pB;
       }
       // pagador === 'fondo' → no genera deuda entre personas
     });
   });
 
-  // Restar saldos ya pagados
+  // Descontar pagos de saldo ya realizados
   Object.values(allAportes).forEach(mesA => {
     Object.values(mesA).forEach(a => {
       if (a.tipo === 'saldar') {
+        // de='matias' significa Matías pagó a Barbra → reduce lo que Matías debe
         if (a.de === 'matias') saldo -= a.monto;
         else saldo += a.monto;
       }
