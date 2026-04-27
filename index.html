@@ -169,7 +169,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 <div id="login-screen">
   <div class="login-card">
     <h2>Nuestra Casa</h2>
-    <p>¿Quién anda metiendo mano a los gastos? 🤔</p>
+    <p>¿Quién anda metiendo mano a los gastos? 🤔<br><span style="font-size:12px;color:var(--hint)">Thor, Mérida, Nala y Tikis ya quieren su comida 🐾</span></p>
     <div class="login-btns">
       <button class="btn-login btn-login-m" onclick="login('matias')">
         <div class="avatar av-m" style="width:28px;height:28px;font-size:12px">M</div> Matías
@@ -178,7 +178,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
         <div class="avatar av-b" style="width:28px;height:28px;font-size:12px">B</div> Barbra
       </button>
     </div>
-    <div style="margin-top:14px;font-size:12px;color:var(--hint);font-style:italic">Hecho con ❤️ para los dos — de Chile a Perú</div>
+    <div style="margin-top:14px;font-size:12px;color:var(--hint);font-style:italic">Hecho con ❤️ para Matías, Barbra, Renata, Thor, Mérida, Nala y Tikis 🐾</div>
     <div style="margin-top:10px;padding-top:12px;border-top:1px solid var(--border)">
       <button style="background:none;border:none;font-size:12px;color:var(--muted);cursor:pointer;font-family:DM Sans,sans-serif" onclick="showModal('cfg-modal')">⚙ Configuración</button>
     </div>
@@ -202,13 +202,13 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 
     <!-- PANEL TAB -->
     <div id="tab-content-panel">
-      <div class="help-box" id="help-panel"><div class="hb-inner"><span class="hi">🏠</span><span class="hb-txt">Resumen general de la casa. Empieza siempre aquí, Barbra.</span></div><button class="hb-close" onclick="closeHelp('panel')">×</button></div>
+      <div class="help-box" id="help-panel"><div class="hb-inner"><span class="hi">🏠</span><span class="hb-txt">Resumen de nuestra casa — la de Matías, Barbra, Renata, Thor, Mérida, Nala y Tikis 🐾</span></div><button class="hb-close" onclick="closeHelp('panel')">×</button></div>
       <div id="alertas-box"></div>
 
       <!-- FONDO -->
       <div class="card">
         <div class="card-title">💰 Fondo de la casa</div>
-        <div class="help-box" id="help-fondo"><div class="hb-inner"><span class="hi">💡</span><span class="hb-txt">Plata disponible para pagar gastos del depa. Cuando lleguen los sueldos, registra el aporte.</span></div><button class="hb-close" onclick="closeHelp('fondo')">×</button></div>
+        <div class="help-box" id="help-fondo"><div class="hb-inner"><span class="hi">💡</span><span class="hb-txt">Plata disponible para el depa (y la comida de los 4 perritos 🐾). Registra el aporte cuando llegue el sueldo.</span></div><button class="hb-close" onclick="closeHelp('fondo')">×</button></div>
         <div class="fondo-big">
           <div class="lbl">Lo que queda en la bolsa, pe 👇</div>
           <div class="val" id="fondo-val">S/ 0</div>
@@ -217,14 +217,14 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
         <div class="fondo-bars" id="fondo-aportes"></div>
         <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn btn-blue" onclick="showModal('aporte-modal')">+ Poner plata al fondo</button>
-          <button class="btn btn-ghost" onclick="showModal('aporte-hist-modal')">¿Quién ha puesto más? 👀</button>
+          <button class="btn btn-ghost" onclick="showModal('aporte-hist-modal')">Ver y editar aportes 👀</button>
         </div>
       </div>
 
       <!-- PROYECCION -->
       <div class="card">
         <div class="card-title">📊 ¿Cómo vamos, causa?</div>
-        <div class="help-box" id="help-proy"><div class="hb-inner"><span class="hi">📏</span><span class="hb-txt">Azul = bien. Naranja = cuidado. Rojo = hay que hablar, pe 😬</span></div><button class="hb-close" onclick="closeHelp('proy')">×</button></div>
+        <div class="help-box" id="help-proy"><div class="hb-inner"><span class="hi">📏</span><span class="hb-txt">Azul = bien 🐾 Naranja = cuidado 🐶 Rojo = hay que hablar PE. Y darle menos snacks a Thor 😅</span></div><button class="hb-close" onclick="closeHelp('proy')">×</button></div>
         <div class="metrics" id="proyeccion-metrics"></div>
         <div id="proyeccion-bar-wrap">
           <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px">
@@ -340,7 +340,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
     <div id="tab-content-config" style="display:none">
       <div class="card">
         <div class="help-box" id="help-config"><div class="hb-inner"><span class="hi">🛠️</span><span class="hb-txt">Ajusta sueldos, tipo de cambio y el límite de alerta. Guarda al final.</span></div><button class="hb-close" onclick="closeHelp('config')">×</button></div>
-        <div class="card-title">Aportes este mes</div>
+        <div class="card-title">Aportes este mes 💰 (para el depa y los peludos)</div>
         <div class="form-grid" style="margin-bottom:10px">
           <div class="field"><label>Aporte Matías (S/)</label><input type="number" id="cfg-ap-m" placeholder="0" oninput="saveCfgLocal()"></div>
           <div class="field"><label>Aporte Barbra (S/)</label><input type="number" id="cfg-ap-b" placeholder="0" oninput="saveCfgLocal()"></div>
@@ -435,6 +435,69 @@ function closeHelp(key) {
     const d = JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]');
     if (!d.includes(key)) { d.push(key); localStorage.setItem(DISMISSED_KEY, JSON.stringify(d)); }
   } catch(e) {}
+}
+
+// ── FAMILIA ──────────────────────────────────────────────────────────────
+const familia = [
+  { nombre: 'Thor', tipo: 'perro', dueno: 'matias' },
+  { nombre: 'Mérida', tipo: 'perro', dueno: 'matias' },
+  { nombre: 'Nala', tipo: 'perro', dueno: 'barbra' },
+  { nombre: 'Tikis', tipo: 'perro', dueno: 'barbra' },
+  { nombre: 'Renata', tipo: 'hija', dueno: 'matias' },
+];
+function uno() { return familia[Math.floor(Math.random() * familia.length)]; }
+function mensajito(tipo) {
+  const f = uno();
+  const msgs = {
+    ok: [
+      f.nombre + ' mueve la cola de felicidad 🐾',
+      f.nombre + ' te lo agradece con un ladrido 🐶',
+      f.nombre + ' aprueba este mes 😄',
+      '¡' + f.nombre + ' está feliz! Y eso lo es todo ❤️',
+      f.nombre + ' ya quiere su premio por esto 🦴',
+    ],
+    warn: [
+      'A ' + f.nombre + ' no le gustó eso 😒',
+      f.nombre + ' te mira con cara de "¿y ahora?" 🐶',
+      'Cuidado... ' + f.nombre + ' ya nota que algo no cuadra 👀',
+      f.nombre + ' olfatea que hay problema, pe 🐽',
+    ],
+    bad: [
+      f.nombre + ' no le gusta NADA esto 😤',
+      '¡' + f.nombre + ' está indignado/a! Y tiene razón 😬',
+      f.nombre + ' dice que así no, causa 🙅',
+      'Hasta ' + f.nombre + ' está preocupado/a... arréglalo po 😟',
+    ],
+    gasto: [
+      f.nombre + ' te lo agradece 🐾',
+      '¡' + f.nombre + ' aprueba el gasto! 🐶',
+      f.nombre + ' mueve la colita 🦴',
+      'Anotado — ' + f.nombre + ' es testigo 👀',
+    ],
+    aporte: [
+      '¡' + f.nombre + ' salta de alegría! 🐾',
+      f.nombre + ' ya sabe que hay plata en el fondo 😄',
+      '¡Llegó la plata! ' + f.nombre + ' lo celebra 🐶',
+      f.nombre + ' ladra de emoción... o eso creemos 🤷',
+    ],
+    fijo: [
+      f.nombre + ' ya sabía que iba a pasar esto 🐾',
+      '¡Los fijos cargados! ' + f.nombre + ' respira tranquilo/a',
+      f.nombre + ' aprueba el orden en esta casa 🏠',
+    ],
+    guardado: [
+      'Guardado. ' + f.nombre + ' fue testigo 🐾',
+      f.nombre + ' firma de conformidad con la patita 🐾',
+      '¡' + f.nombre + ' lo aprueba! Configuración guardada ✓',
+    ],
+    editado: [
+      'Corregido. ' + f.nombre + ' ni se dio cuenta del error 😂',
+      f.nombre + ' dice que todos nos equivocamos, pe 🐾',
+      '¡Listo! ' + f.nombre + ' ya lo anotó en su mente perruna 🐶',
+    ],
+  };
+  const lista = msgs[tipo] || msgs.ok;
+  return lista[Math.floor(Math.random() * lista.length)];
 }
 
 // ── FIREBASE ──────────────────────────────────────────────────────────────
@@ -564,7 +627,7 @@ function saveCfgLocal() {
 async function saveCfgFirebase() {
   saveCfgLocal();
   if (db) await db.ref('config').set(cfg);
-  showToast('Configuración guardada. Los dos mandan acá 👑❤️');
+  showToast(mensajito('guardado'));
 }
 
 // ── FONDO CALC ────────────────────────────────────────────────────────────
@@ -643,10 +706,10 @@ function renderPanel() {
 
   // Alertas
   let alertHtml = '';
-  if (fondo < 0) alertHtml += '<div class="alert alert-bad">🚨 ¡Choche, estamos en rojo! Debemos ' + fmt(Math.abs(fondo)) + ' y nadie quiere eso, pe</div>';
-  else if (fondo < cfg.alerta) alertHtml += '<div class="alert alert-warn">⚠️ Ojo causa, el fondo está más flaco que perro de feria. Quedan menos de ' + fmt(cfg.alerta) + '</div>';
+  if (fondo < 0) alertHtml += '<div class="alert alert-bad">🚨 ' + mensajito('bad') + ' Debemos ' + fmt(Math.abs(fondo)) + '</div>';
+  else if (fondo < cfg.alerta) alertHtml += '<div class="alert alert-warn">⚠️ ' + mensajito('warn') + ' Quedan menos de ' + fmt(cfg.alerta) + '</div>';
   if (totalPendiente > fondo && fondo >= 0) alertHtml += '<div class="alert alert-warn">⚠️ Houston, tenemos un problema 🚀 Los gastos pendientes (' + fmt(totalPendiente) + ') están ganando al fondo. ¡A poner plata, po!</div>';
-  if (!alertHtml) alertHtml = '<div class="alert alert-ok">✓ ¡Todo bacán, causa! El fondo aguanta el mes. ¡Brillante equipo! 🥰</div>';
+  if (!alertHtml) alertHtml = '<div class="alert alert-ok">✓ ¡Todo bacán! ' + mensajito('ok') + '</div>';
   document.getElementById('alertas-box').innerHTML = alertHtml;
 
   // Proyección
@@ -666,7 +729,7 @@ function renderPanel() {
   // Recientes
   const todos = Object.values(allGastos[mesActivo] || {}).sort((a,b) => b.ts - a.ts).slice(0,5);
   document.getElementById('recientes-list').innerHTML = todos.length === 0
-    ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Sin movimientos este mes. ¿Están viviendo del aire, bacán? 🌬️</div>'
+    ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Sin movimientos aún. ¿Están viviendo del amor y los perritos? 🐾🌬️</div>'
     : todos.map(g => gastoItemHtml(g)).join('');
 }
 
@@ -690,7 +753,7 @@ function renderGastosList() {
   const paid = gastos.filter(g => g.estado === 'paid');
   const pendEl = document.getElementById('gastos-pending-list');
   const paidEl = document.getElementById('gastos-paid-list');
-  pendEl.innerHTML = pending.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Cero gastos pendientes, causa. ¡Estamos al día, pe! 🎉</div>' : pending.map(g => gastoItemHtml(g)).join('');
+  pendEl.innerHTML = pending.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">¡Sin pendientes! Thor, Mérida, Nala y Tikis también están al día 🐾🎉</div>' : pending.map(g => gastoItemHtml(g)).join('');
   paidEl.innerHTML = paid.length === 0 ? '<div style="text-align:center;padding:20px;color:var(--hint);font-size:13px">Nadie ha pagado nada todavía... esto va a doler, amigo 😬</div>' : paid.map(g => gastoItemHtml(g)).join('');
 }
 
@@ -724,7 +787,7 @@ async function agregarGasto() {
   mesActivo = mes;
   document.getElementById('g-concepto').value = '';
   document.getElementById('g-monto').value = '';
-  showToast('Gasto anotado, pe 📝 Barbra ya sabe jaja');
+  showToast('Anotado 📝 — ' + mensajito('gasto'));
 }
 
 async function toggleEstado(id, mes) {
@@ -751,7 +814,7 @@ async function agregarFijo() {
   if (db) await db.ref('fijos/'+f.id).set(f);
   document.getElementById('f-concepto').value = '';
   document.getElementById('f-monto').value = '';
-  showToast('Fijo agregado. Ese no se escapa nunca, causa 😤');
+  showToast('Fijo agregado — ' + mensajito('fijo'));
 }
 
 async function eliminarFijo(id) {
@@ -769,7 +832,7 @@ async function generarFijosEsteMes() {
     if (db) await db.ref('gastos/'+mes+'/'+g.id).set(g);
     count++;
   }
-  showToast('¡Listos los fijos, po! ' + count + ' gastos cargados en ' + labelMes(mes) + ' 💪');
+  showToast(count + ' fijos cargados — ' + mensajito('fijo'));
   switchTab('gastos');
 }
 
@@ -786,7 +849,7 @@ async function registrarAporte() {
   hideModal('aporte-modal');
   document.getElementById('ap-monto').value = '';
   document.getElementById('ap-nota').value = '';
-  showToast('¡Llegó la plata! +' + fmt(monto) + ' de ' + (quien==='matias'?'Matías (eres lo máximo, amor 💙)':'Barbra (la más bacán del barrio 💚)'));
+  showToast('+' + fmt(monto) + ' al fondo — ' + mensajito('aporte'));
 
   // Show historial
   renderAporteHist();
@@ -852,14 +915,14 @@ async function guardarEdicionAporte() {
   else { if (allAportes[mes]) allAportes[mes][id] = updated; renderAll(); }
   hideModal('edit-aporte-modal');
   renderAporteHist();
-  showToast('Aporte actualizado, listo pe 👌');
+  showToast(mensajito('editado'));
 }
 async function eliminarAporte(mes, id) {
   if (!confirm('¿Seguro que quieres eliminar este aporte?')) return;
   if (db) await db.ref('aportes/' + mes + '/' + id).remove();
   else { if (allAportes[mes]) { delete allAportes[mes][id]; renderAll(); } }
   renderAporteHist();
-  showToast('Aporte eliminado');
+  showToast('Aporte eliminado — ' + mensajito('warn'));
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
