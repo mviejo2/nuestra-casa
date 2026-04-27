@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gastos — Matías & Barbra</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --border: #E8E4DC;
+    --text: #1A1A18;
+    --muted: #888880;
+    --hint: #BBBBBB;
+    --blue: #2563EB;
+    --blue-light: #EEF3FE;
+    --green: #16A34A;
+    --green-light: #F0FDF4;
+    --amber: #D97706;
+    --amber-light: #FFFBEB;
+    --red: #DC2626;
+    --red-light: #FEF2F2;
+    --matias: #2563EB;
+    --barbra: #16A34A;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .topbar-title span { color: var(--blue); }
+  .user-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 14px 5px 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background .15s;
+  }
+  .user-pill:hover { background: var(--border); }
+  .avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500; color: #fff;
+  }
+  .av-m { background: var(--matias); }
+  .av-b { background: var(--barbra); }
+
+  /* MAIN LAYOUT */
+  .main { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  /* LOGIN SCREEN */
+  #login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: calc(100vh - 60px);
+  }
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    width: 100%; max-width: 380px;
+    text-align: center;
+  }
+  .login-card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px; margin-bottom: 8px;
+  }
+  .login-card p { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  .login-btns { display: flex; flex-direction: column; gap: 12px; }
+  .btn-login {
+    padding: 14px; border-radius: var(--radius-sm);
+    border: 1.5px solid; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all .15s;
+  }
+  .btn-login-m {
+    background: var(--blue); color: #fff; border-color: var(--blue);
+  }
+  .btn-login-m:hover { background: #1D4ED8; }
+  .btn-login-b {
+    background: var(--green); color: #fff; border-color: var(--green);
+  }
+  .btn-login-b:hover { background: #15803D; }
+
+  /* SECTION TITLE */
+  .sec-label {
+    font-size: 11px; font-weight: 500; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .08em;
+    margin-bottom: 14px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* METRICS ROW */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin-bottom: 16px; }
+  .metric { background: var(--bg); border-radius: var(--radius-sm); padding: 14px; }
+  .metric .m-lbl { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .metric .m-val { font-size: 22px; font-weight: 500; line-height: 1.1; }
+  .metric .m-sub { font-size: 11px; color: var(--hint); margin-top: 3px; }
+
+  /* BAR */
+  .dist-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 3px; margin-top: 10px; }
+  .bar-track { height: 7px; background: var(--bg); border-radius: 4px; overflow: hidden; margin-bottom: 8px; }
+  .bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .field input, .field select {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: var(--bg);
+    color: var(--text);
+    transition: border .15s;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--blue); background: #fff; }
+  .btn-add {
+    background: var(--blue); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    padding: 10px 22px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    transition: background .15s; margin-top: 14px;
+  }
+  .btn-add:hover { background: #1D4ED8; }
+
+  /* MONTH TABS */
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .tab {
+    font-size: 13px; padding: 5px 16px;
+    border-radius: 20px; border: 1px solid var(--border);
+    cursor: pointer; background: transparent;
+    color: var(--muted); font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+  .tab:hover { background: var(--bg); }
+  .tab.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+  /* TABLE */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { font-size: 11px; color: var(--muted); text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-weight: 500; white-space: nowrap; }
+  td { padding: 10px; border-bottom: 1px solid var(--bg); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  /* BADGE */
+  .badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+  .badge-shared { background: var(--blue-light); color: var(--blue); }
+  .badge-matias { background: #EEF3FE; color: #1D4ED8; }
+  .badge-barbra { background: var(--green-light); color: var(--green); }
+
+  .who-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+  /* SAVINGS */
+  .ok { color: var(--green); }
+  .warn { color: var(--amber); }
+  .bad { color: var(--red); }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 40px 20px; color: var(--hint); font-size: 14px; }
+
+  /* DELETE BTN */
+  .btn-del {
+    background: none; border: none; color: var(--hint);
+    cursor: pointer; font-size: 16px; padding: 2px 6px;
+    border-radius: 4px; line-height: 1;
+    transition: all .1s;
+  }
+  .btn-del:hover { background: var(--red-light); color: var(--red); }
+
+  /* CONFIG TOGGLE */
+  .cfg-toggle {
+    font-size: 12px; color: var(--muted); cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    background: none; border: none;
+    font-family: 'DM Sans', sans-serif;
+    padding: 0;
+  }
+  .cfg-toggle:hover { color: var(--text); }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--text); color: #fff;
+    border-radius: var(--radius-sm); padding: 10px 18px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s; z-index: 999;
+  }
+  #toast.show { opacity: 1; }
+
+  /* FIREBASE STATUS */
+  #db-status {
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hint); }
+  .dot.connected { background: var(--green); }
+  .dot.error { background: var(--red); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.three { grid-template-columns: 1fr 1fr; }
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .topbar-title { font-size: 17px; }
+  }
+
+  /* SETUP SCREEN */
+  #setup-screen {
+    display: none;
+    background: rgba(0,0,0,.4);
+    position: fixed; inset: 0; z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  #setup-screen.show { display: flex; }
+  .setup-card {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 36px; width: 100%; max-width: 500px;
+    margin: 20px;
+  }
+  .setup-card h3 { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 6px; }
+  .setup-card p { color: var(--muted); font-size: 13px; margin-bottom: 24px; line-height: 1.6; }
+  .setup-field { margin-bottom: 14px; }
+  .setup-field label { font-size: 12px; color: var(--muted); font-weight: 500; display: block; margin-bottom: 5px; }
+  .setup-field input {
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    background: var(--bg); color: var(--text);
+  }
+  .setup-field input:focus { outline: none; border-color: var(--blue); }
+  .setup-btns { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-setup-save {
+    flex: 1; padding: 11px; background: var(--blue); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer;
+  }
+  .btn-setup-cancel {
+    padding: 11px 18px; background: none;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    cursor: pointer; color: var(--muted);
+  }
+
+  .firebase-instructions {
+    background: var(--amber-light);
+    border: 1px solid #FDE68A;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .firebase-instructions strong { color: var(--amber); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-title">gastos <span>&</span> ahorro</div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div id="db-status"><div class="dot" id="db-dot"></div><span id="db-txt">Conectando...</span></div>
+    <div class="user-pill" id="user-pill" onclick="logout()" style="display:none">
+      <div class="avatar" id="pill-av"></div>
+      <span id="pill-name"></span>
+      <span style="color:var(--hint);font-size:11px;margin-left:2px">↩</span>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <h2>Hola 👋</h2>
+    <p>¿Quién está ingresando gastos hoy?</p>
+    <div class="login-btns">
+      <button class="btn-login btn-login-m" onclick="login('matias')">
+        <div class="avatar av-m" style="width:30px;height:30px;font-size:13px">M</div>
+        Soy Matías
+      </button>
+      <button class="btn-login btn-login-b" onclick="login('barbra')">
+        <div class="avatar av-b" style="width:30px;height:30px;font-size:13px">B</div>
+        Soy Barbra
+      </button>
+    </div>
+    <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+      <button class="cfg-toggle" onclick="showSetup()" style="margin:0 auto;display:flex;">
+        ⚙ Ajustes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <div class="main">
+
+    <!-- RESUMEN -->
+    <div style="margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
+      <div class="sec-label" style="margin:0">Resumen del mes</div>
+      <button class="cfg-toggle" onclick="showSetup()">⚙ Configuración</button>
+    </div>
+    <div class="card">
+      <div class="metrics" id="metrics"></div>
+      <div id="bars"></div>
+    </div>
+
+    <!-- AGREGAR GASTO -->
+    <div class="sec-label">Registrar gasto</div>
+    <div class="card">
+      <div class="form-grid" style="margin-bottom:12px">
+        <div class="field">
+          <label>Concepto</label>
+          <input id="g-concepto" placeholder="Ej: Supermercado Wong">
+        </div>
+        <div class="field">
+          <label>Monto (S/)</label>
+          <input type="number" id="g-monto" placeholder="0" min="0">
+        </div>
+      </div>
+      <div class="form-grid three">
+        <div class="field">
+          <label>Tipo</label>
+          <select id="g-tipo">
+            <option value="shared">Compartido</option>
+            <option value="matias">Solo Matías</option>
+            <option value="barbra">Solo Barbra</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Categoría</label>
+          <select id="g-cat">
+            <option value="vivienda">Vivienda</option>
+            <option value="comida">Comida</option>
+            <option value="servicios">Servicios</option>
+            <option value="transporte">Transporte</option>
+            <option value="salud">Salud</option>
+            <option value="ocio">Ocio</option>
+            <option value="ropa">Ropa</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="g-fecha">
+        </div>
+      </div>
+      <button class="btn-add" onclick="agregarGasto()">+ Registrar</button>
+    </div>
+
+    <!-- INGRESOS EXTRA -->
+    <div class="sec-label">Ingresos extra del mes</div>
+    <div class="card">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">Ventas, bonos, reembolsos — se suman al fondo común y reducen lo que pagan los dos.</div>
+      <div class="form-grid" style="margin-bottom:12px">
+        <div class="field"><label>Descripción</label><input id="i-concepto" placeholder="Ej: Venta mueble sala"></div>
+        <div class="field"><label>Monto (S/)</label><input type="number" id="i-monto" placeholder="0" min="0"></div>
+      </div>
+      <div class="form-grid three">
+        <div class="field">
+          <label>De quién</label>
+          <select id="i-quien">
+            <option value="casa">De la casa (ambos)</option>
+            <option value="matias">Aporte de Matías</option>
+            <option value="barbra">Aporte de Barbra</option>
+          </select>
+        </div>
+        <div class="field"><label>Categoría</label>
+          <select id="i-cat">
+            <option value="venta">Venta</option>
+            <option value="bono">Bono / Extra laboral</option>
+            <option value="reembolso">Reembolso</option>
+            <option value="regalo">Regalo / Donación</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="field"><label>Fecha</label><input type="date" id="i-fecha"></div>
+      </div>
+      <button class="btn-add" style="background:var(--green)" onclick="agregarIngreso()">+ Registrar ingreso</button>
+    </div>
+
+    <!-- HISTORIAL -->
+    <div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+      <div class="sec-label" style="margin:0">Historial</div>
+    </div>
+    <div class="tabs" id="month-tabs"></div>
+    <div class="card">
+      <div id="tabla-gastos"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SETUP MODAL -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <h3>Configuración</h3>
+    <p>Ajusta los ingresos y preferencias de Matías y Barbra.</p>
+
+    <div style="border-bottom:1px solid var(--border);margin-bottom:16px;"></div>
+      <div class="sec-label" style="margin-bottom:10px">Finanzas</div>
+      <div class="form-grid">
+        <div class="setup-field"><label>Ingreso Matías (S/)</label><input type="number" id="s-ing-m" placeholder="3000"></div>
+        <div class="setup-field"><label>Ingreso Barbra (S/)</label><input type="number" id="s-ing-b" placeholder="2000"></div>
+        <div class="setup-field"><label>Tipo de cambio USD</label><input type="number" id="s-tc" placeholder="3.70" step="0.01"></div>
+        <div class="setup-field"><label>Tope máx proporción (%)</label><input type="number" id="s-tope" placeholder="65"></div>
+        <div class="setup-field"><label>Meta ahorro (%)</label><input type="number" id="s-ahorro" placeholder="10"></div>
+      </div>
+    </div>
+
+    <div class="setup-btns">
+      <button class="btn-setup-cancel" onclick="hideSetup()">Cancelar</button>
+      <button class="btn-setup-save" onclick="saveSetup()">Guardar configuración</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- FIREBASE SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<script>
+// ── CONFIG LOCAL ─────────────────────────────────────────────────────────
+let cfg = {
+  apiKey: 'AIzaSyBvEh2P37a9wZXRkYvnq0Cvl3TekuQommo',
+  dbUrl: 'https://nuestra-casa-88d07-default-rtdb.firebaseio.com',
+  projectId: 'nuestra-casa-88d07',
+  ingMatias: 3000, ingBarbra: 2000,
+  tc: 3.70, tope: 65, ahorro: 10
+};
+let currentUser = null;
+let db = null;
+let mesActivo = '';
+let allData = {};
+let ingExtAll = {};
+let cfgListener = null;
+let dataListener = null;
+
+function loadLocalCfg() {
+  try {
+    const s = localStorage.getItem('gasto_cfg_mb');
+    if (s) cfg = {...cfg, ...JSON.parse(s)};
+  } catch(e) {}
+}
+function saveLocalCfg() {
+  localStorage.setItem('gasto_cfg_mb', JSON.stringify(cfg));
+}
+async function saveCfgFirebase() {
+  if (!db) return;
+  await db.ref('config').set({
+    ingMatias: cfg.ingMatias, ingBarbra: cfg.ingBarbra,
+    tc: cfg.tc, tope: cfg.tope, ahorro: cfg.ahorro
+  });
+}
+function listenConfig() {
+  if (!db) return;
+  db.ref('config').on('value', snap => {
+    const d = snap.val();
+    if (d) {
+      cfg = {...cfg, ...d};
+      saveLocalCfg();
+      // Update setup fields if open
+      ['s-ing-m','s-ing-b','s-tc','s-tope','s-ahorro'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id==='s-ing-m') el.value = cfg.ingMatias;
+        if (id==='s-ing-b') el.value = cfg.ingBarbra;
+        if (id==='s-tc') el.value = cfg.tc;
+        if (id==='s-tope') el.value = cfg.tope;
+        if (id==='s-ahorro') el.value = cfg.ahorro;
+      });
+      if (currentUser) renderMes();
+    }
+  });
+}
+
+// ── FIREBASE INIT ────────────────────────────────────────────────────────
+function initFirebase() {
+  if (!cfg.apiKey || !cfg.dbUrl) {
+    setDbStatus(false, 'Sin configurar');
+    return false;
+  }
+  try {
+    if (window._fbApp) {
+      try { window._fbApp.delete(); } catch(e) {}
+    }
+    window._fbApp = firebase.initializeApp({
+      apiKey: cfg.apiKey,
+      databaseURL: cfg.dbUrl,
+      projectId: cfg.projectId
+    }, 'gastos-mb-' + Date.now());
+    db = firebase.database(window._fbApp);
+    setDbStatus(null, 'Conectando...');
+    db.ref('.info/connected').on('value', snap => {
+      setDbStatus(snap.val(), snap.val() ? 'Conectado' : 'Sin conexión');
+    });
+    return true;
+  } catch(e) {
+    setDbStatus(false, 'Error: ' + e.message);
+    return false;
+  }
+}
+
+function setDbStatus(ok, msg) {
+  const dot = document.getElementById('db-dot');
+  const txt = document.getElementById('db-txt');
+  dot.className = 'dot' + (ok === true ? ' connected' : ok === false ? ' error' : '');
+  txt.textContent = msg;
+}
+
+// ── AUTH (simple) ────────────────────────────────────────────────────────
+function login(who) {
+  currentUser = who;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  const pill = document.getElementById('user-pill');
+  pill.style.display = 'flex';
+  document.getElementById('pill-name').textContent = who === 'matias' ? 'Matías' : 'Barbra';
+  const av = document.getElementById('pill-av');
+  av.textContent = who === 'matias' ? 'M' : 'B';
+  av.className = 'avatar ' + (who === 'matias' ? 'av-m' : 'av-b');
+  setFechaHoy();
+  mesActivo = mesActual();
+  if (db) listenData();
+  else { renderTabs(); renderMes(); }
+}
+
+function logout() {
+  currentUser = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('user-pill').style.display = 'none';
+  if (dataListener) { dataListener(); dataListener = null; }
+}
+
+// ── FIREBASE DATA ────────────────────────────────────────────────────────
+function listenData() {
+  if (dataListener) { dataListener(); dataListener = null; }
+  if (!db) return;
+  listenConfig();
+  const ref = db.ref('gastos');
+  ref.on('value', snap => {
+    allData = snap.val() || {};
+    renderTabs();
+    renderMes();
+  });
+  const refIng = db.ref('ingresos');
+  refIng.on('value', snap => {
+    ingExtAll = snap.val() || {};
+    renderMes();
+  });
+  dataListener = () => { ref.off('value'); refIng.off('value'); };
+}
+
+async function agregarIngreso() {
+  const concepto = document.getElementById('i-concepto').value.trim();
+  const monto = +document.getElementById('i-monto').value;
+  const origen = document.getElementById('i-quien').value;
+  const cat = document.getElementById('i-cat').value;
+  const fecha = document.getElementById('i-fecha').value;
+  if (!concepto || !monto) { alert('Completa descripción y monto.'); return; }
+  const ingreso = { id: 'i' + Date.now(), concepto, monto, origen, cat, fecha, quien: currentUser, ts: Date.now() };
+  const mes = fecha.substring(0,7);
+  mesActivo = mes;
+  if (db) {
+    await db.ref('ingresos/' + mes + '/' + ingreso.id).set(ingreso);
+  } else {
+    if (!ingExtAll[mes]) ingExtAll[mes] = {};
+    ingExtAll[mes][ingreso.id] = ingreso;
+    renderTabs(); renderMes();
+  }
+  document.getElementById('i-concepto').value = '';
+  document.getElementById('i-monto').value = '';
+  showToast('Ingreso registrado');
+}
+
+async function deleteIngreso(mes, id) {
+  if (db) {
+    await db.ref('ingresos/' + mes + '/' + id).remove();
+  } else {
+    if (ingExtAll[mes]) { delete ingExtAll[mes][id]; renderMes(); }
+  }
+}
+
+async function pushGasto(gasto) {
+  if (!db) {
+    // fallback local
+    const mes = gasto.fecha.substring(0,7);
+    if (!allData[mes]) allData[mes] = {};
+    allData[mes][gasto.id] = gasto;
+    renderTabs(); renderMes();
+    showToast('Guardado localmente (sin Firebase)');
+    return;
+  }
+  const mes = gasto.fecha.substring(0,7);
+  await db.ref(`gastos/${mes}/${gasto.id}`).set(gasto);
+}
+
+async function deleteGasto(mes, id) {
+  if (!db) {
+    if (allData[mes]) { delete allData[mes][id]; renderTabs(); renderMes(); }
+    return;
+  }
+  await db.ref(`gastos/${mes}/${id}`).remove();
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────────
+function mesActual() {
+  const h = new Date();
+  return h.getFullYear() + '-' + String(h.getMonth()+1).padStart(2,'0');
+}
+function labelMes(ym) {
+  const [y,m] = ym.split('-');
+  return ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][+m-1] + ' ' + y;
+}
+function fmt(n) { return 'S/ ' + Math.round(n).toLocaleString('es-PE'); }
+function setFechaHoy() {
+  const h = new Date();
+  document.getElementById('g-fecha').value =
+    h.getFullYear() + '-' + String(h.getMonth()+1).padStart(2,'0') + '-' + String(h.getDate()).padStart(2,'0');
+}
+function showToast(msg='Guardado') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+function calcPct() {
+  const total = cfg.ingMatias + cfg.ingBarbra;
+  const tope = cfg.tope / 100;
+  let pM = total > 0 ? cfg.ingMatias / total : 0.5;
+  let pB = total > 0 ? cfg.ingBarbra / total : 0.5;
+  if (pM > tope) { pM = tope; pB = 1 - tope; }
+  if (pB > tope) { pB = tope; pM = 1 - tope; }
+  return { pM, pB };
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────
+function renderTabs() {
+  const meses = [...new Set([mesActual(), ...Object.keys(allData)])].sort().reverse();
+  const el = document.getElementById('month-tabs');
+  el.innerHTML = '';
+  meses.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'tab' + (m === mesActivo ? ' active' : '');
+    b.textContent = labelMes(m);
+    b.onclick = () => { mesActivo = m; renderTabs(); renderMes(); };
+    el.appendChild(b);
+  });
+}
+
+function renderMes() {
+  const mesData = allData[mesActivo] || {};
+  const gastos = Object.values(mesData).sort((a,b) => b.fecha.localeCompare(a.fecha));
+  const ingExtData = ingExtAll[mesActivo] || {};
+  const ingExtList = Object.values(ingExtData).sort((a,b) => b.fecha.localeCompare(a.fecha));
+  const {pM, pB} = calcPct();
+
+  // Fondo común: ingresos extra de la casa se distribuyen proporcionalmente
+  let fondoCasa = 0, aporteM = 0, aporteB = 0;
+  ingExtList.forEach(i => {
+    if (i.origen === 'casa') fondoCasa += i.monto;
+    else if (i.origen === 'matias') aporteM += i.monto;
+    else aporteB += i.monto;
+  });
+  const descuentoM = fondoCasa * pM + aporteM;
+  const descuentoB = fondoCasa * pB + aporteB;
+
+  let sharedTotal = 0, soloM = 0, soloB = 0;
+  gastos.forEach(g => {
+    if (g.tipo === 'shared') sharedTotal += g.monto;
+    else if (g.tipo === 'matias') soloM += g.monto;
+    else soloB += g.monto;
+  });
+
+  const pagM = Math.max(0, sharedTotal * pM + soloM - descuentoM);
+  const pagB = Math.max(0, sharedTotal * pB + soloB - descuentoB);
+  const totalIngExt = fondoCasa + aporteM + aporteB;
+  const ahorM = cfg.ingMatias - pagM;
+  const ahorB = cfg.ingBarbra - pagB;
+  const metaM = cfg.ingMatias * (cfg.ahorro/100);
+  const metaB = cfg.ingBarbra * (cfg.ahorro/100);
+
+  const clsM = ahorM >= metaM ? 'ok' : ahorM >= 0 ? 'warn' : 'bad';
+  const clsB = ahorB >= metaB ? 'ok' : ahorB >= 0 ? 'warn' : 'bad';
+
+  document.getElementById('metrics').innerHTML = `
+    <div class="metric"><div class="m-lbl">Total compartido</div><div class="m-val">${fmt(sharedTotal)}</div><div class="m-sub">${gastos.filter(g=>g.tipo==='shared').length} gastos</div></div>
+    <div class="metric"><div class="m-lbl">Paga Matías</div><div class="m-val">${fmt(pagM)}</div><div class="m-sub">${Math.round(pM*100)}% − descuentos</div></div>
+    <div class="metric"><div class="m-lbl">Paga Barbra</div><div class="m-val">${fmt(pagB)}</div><div class="m-sub">${Math.round(pB*100)}% − descuentos</div></div>
+    ${totalIngExt > 0 ? '<div class="metric"><div class="m-lbl">Fondo extra del mes</div><div class="m-val" style="color:var(--green)">' + fmt(totalIngExt) + '</div><div class="m-sub">' + ingExtList.length + ' ingreso(s)</div></div>' : ''}
+  `;
+
+  document.getElementById('bars').innerHTML = `
+    <div class="dist-row"><span style="color:var(--matias);font-weight:500">Matías ${Math.round(pM*100)}%</span><span>${fmt(sharedTotal*pM)}${descuentoM>0?' <span style=\"color:var(--green);font-size:12px\">− '+fmt(descuentoM)+'</span>':''}</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(pM*100)}%;background:var(--matias)"></div></div>
+    <div class="dist-row"><span style="color:var(--barbra);font-weight:500">Barbra ${Math.round(pB*100)}%</span><span>${fmt(sharedTotal*pB)}${descuentoB>0?' <span style=\"color:var(--green);font-size:12px\">− '+fmt(descuentoB)+'</span>':''}</span></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(pB*100)}%;background:var(--barbra)"></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
+      <div class="metric"><div class="m-lbl">Ahorro Matías</div><div class="m-val ${clsM}">${fmt(ahorM)}</div><div class="m-sub">Meta: ${fmt(metaM)}</div></div>
+      <div class="metric"><div class="m-lbl">Ahorro Barbra</div><div class="m-val ${clsB}">${fmt(ahorB)}</div><div class="m-sub">Meta: ${fmt(metaB)}</div></div>
+    </div>
+  `;
+
+  // Tabla gastos
+  const tbodyGastos = gastos.length === 0
+    ? `<div class="empty">Sin gastos este mes. ¡Agrega el primero!</div>`
+    : `<div class="tbl-wrap"><table>
+        <thead><tr><th>Fecha</th><th>Concepto</th><th>Cat.</th><th>Tipo</th><th>Registró</th><th style="text-align:right">Monto</th><th></th></tr></thead>
+        <tbody>${gastos.map(g => {
+          const badge = g.tipo === 'shared'
+            ? '<span class="badge badge-shared">Compartido</span>'
+            : g.tipo === 'matias'
+            ? '<span class="badge badge-matias">Solo Matías</span>'
+            : '<span class="badge badge-barbra">Solo Barbra</span>';
+          const whoColor = g.quien === 'matias' ? 'var(--matias)' : 'var(--barbra)';
+          const whoName = g.quien === 'matias' ? 'Matías' : 'Barbra';
+          return '<tr>'
+            + '<td style="color:var(--muted);white-space:nowrap">'+g.fecha.substring(5)+'</td>'
+            + '<td style="font-weight:500">'+g.concepto+'</td>'
+            + '<td style="color:var(--muted);text-transform:capitalize">'+g.cat+'</td>'
+            + '<td>'+badge+'</td>'
+            + '<td><span class="who-dot" style="background:'+whoColor+'"></span>'+whoName+'</td>'
+            + '<td style="text-align:right;font-weight:500">'+fmt(g.monto)+'</td>'
+            + '<td><button class="btn-del" onclick="deleteGasto(\'' + mesActivo + '\',\'' + g.id + '\')">×</button></td>'
+            + '</tr>';
+        }).join('')}</tbody>
+      </table></div>`;
+
+  // Tabla ingresos extra
+  const tbodyIng = ingExtList.length === 0 ? '' :
+    `<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+      <div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Ingresos extra</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Fecha</th><th>Descripción</th><th>Cat.</th><th>Origen</th><th>Registró</th><th style="text-align:right">Monto</th><th></th></tr></thead>
+        <tbody>${ingExtList.map(i => {
+          const origenLabel = i.origen==='casa' ? '<span class="badge badge-shared">Casa</span>'
+            : i.origen==='matias' ? '<span class="badge badge-matias">Matías</span>'
+            : '<span class="badge badge-barbra">Barbra</span>';
+          const whoColor = i.quien === 'matias' ? 'var(--matias)' : 'var(--barbra)';
+          const whoName = i.quien === 'matias' ? 'Matías' : 'Barbra';
+          return '<tr>'
+            + '<td style="color:var(--muted);white-space:nowrap">'+i.fecha.substring(5)+'</td>'
+            + '<td style="font-weight:500">'+i.concepto+'</td>'
+            + '<td style="color:var(--muted);text-transform:capitalize">'+i.cat+'</td>'
+            + '<td>'+origenLabel+'</td>'
+            + '<td><span class="who-dot" style="background:'+whoColor+'"></span>'+whoName+'</td>'
+            + '<td style="text-align:right;font-weight:500;color:var(--green)">+'+fmt(i.monto)+'</td>'
+            + '<td><button class="btn-del" onclick="deleteIngreso(\'' + mesActivo + '\', \'' + i.id + '\')">×</button></td>'
+            + '</tr>';
+        }).join('')}</tbody>
+      </table></div>
+    </div>`;
+
+  document.getElementById('tabla-gastos').innerHTML = tbodyGastos + tbodyIng;
+}
+
+// ── ACTIONS ──────────────────────────────────────────────────────────────
+async function agregarGasto() {
+  const concepto = document.getElementById('g-concepto').value.trim();
+  const monto = +document.getElementById('g-monto').value;
+  const tipo = document.getElementById('g-tipo').value;
+  const cat = document.getElementById('g-cat').value;
+  const fecha = document.getElementById('g-fecha').value;
+  if (!concepto || !monto) { alert('Completa concepto y monto.'); return; }
+  const gasto = {
+    id: 'g' + Date.now(),
+    concepto, monto, tipo, cat, fecha,
+    quien: currentUser,
+    ts: Date.now()
+  };
+  mesActivo = fecha.substring(0,7);
+  await pushGasto(gasto);
+  document.getElementById('g-concepto').value = '';
+  document.getElementById('g-monto').value = '';
+  showToast('Gasto registrado');
+  if (!db) { renderTabs(); renderMes(); }
+}
+
+// ── SETUP ────────────────────────────────────────────────────────────────
+function showSetup() {
+  document.getElementById('s-ing-m').value = cfg.ingMatias || 3000;
+  document.getElementById('s-ing-b').value = cfg.ingBarbra || 2000;
+  document.getElementById('s-tc').value = cfg.tc || 3.70;
+  document.getElementById('s-tope').value = cfg.tope || 65;
+  document.getElementById('s-ahorro').value = cfg.ahorro || 10;
+  document.getElementById('setup-screen').classList.add('show');
+}
+function hideSetup() {
+  document.getElementById('setup-screen').classList.remove('show');
+}
+function saveSetup() {
+  cfg.ingMatias = +document.getElementById('s-ing-m').value || 3000;
+  cfg.ingBarbra = +document.getElementById('s-ing-b').value || 2000;
+  cfg.tc = +document.getElementById('s-tc').value || 3.70;
+  cfg.tope = +document.getElementById('s-tope').value || 65;
+  cfg.ahorro = +document.getElementById('s-ahorro').value || 10;
+  saveLocalCfg();
+  saveCfgFirebase();
+  hideSetup();
+  if (currentUser) { renderTabs(); renderMes(); }
+  showToast('Configuración guardada para ambos');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────
+loadLocalCfg();
+setFechaHoy();
+document.getElementById('i-fecha').value = document.getElementById('g-fecha').value;
+initFirebase();
+setDbStatus(null, 'Conectando...');
+</script>
+</body>
+</html>
