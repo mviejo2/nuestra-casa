@@ -26,7 +26,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .main{max-width:860px;margin:0 auto;padding:20px 16px 80px}
 /* TABS */
 .nav-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:4px;margin-bottom:20px}
-.nav-tab{flex:1;text-align:center;padding:8px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);border:none;background:none;font-family:"DM Sans",sans-serif;transition:all .15s}
+.nav-tab{flex:1;text-align:center;padding:11px 4px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:none;font-family:"DM Sans",sans-serif;transition:all .15s;min-height:44px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .nav-tab.active{background:var(--text);color:#fff}
 /* CARDS */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
@@ -34,7 +34,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 /* FONDO CARD */
 .fondo-big{text-align:center;padding:10px 0 14px}
 .fondo-big .lbl{font-size:12px;color:var(--muted);margin-bottom:4px}
-.fondo-big .val{font-size:36px;font-weight:300;font-family:"DM Serif Display",serif;letter-spacing:-1px}
+.fondo-big .val{font-size:42px;font-weight:300;font-family:"DM Serif Display",serif;letter-spacing:-1px}
 .fondo-big .sub{font-size:12px;color:var(--muted);margin-top:4px}
 .fondo-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .fondo-bar-item .fb-lbl{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:3px}
@@ -54,12 +54,12 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 /* GASTO ITEMS */
 .gasto-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
 .gasto-item:last-child{border-bottom:none}
-.gasto-check{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.gasto-check{width:36px;height:36px;border-radius:10px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:18px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .gasto-check.paid{background:var(--green);border-color:var(--green);color:#fff}
 .gasto-check.pending{background:var(--surface)}
 .gasto-info{flex:1;min-width:0}
-.gasto-info .gi-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gasto-info .gi-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.gasto-info .gi-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gasto-info .gi-sub{font-size:12px;color:var(--muted);margin-top:2px}
 .gasto-right{text-align:right;flex-shrink:0}
 .gasto-right .gr-monto{font-size:14px;font-weight:500}
 .gasto-right .gr-sub{font-size:11px;color:var(--muted)}
@@ -72,22 +72,22 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form-grid.three{grid-template-columns:1fr 1fr 1fr}
 .field{display:flex;flex-direction:column;gap:4px}
-.field label{font-size:12px;color:var(--muted);font-weight:500}
-.field input,.field select{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:"DM Sans",sans-serif;font-size:14px;background:var(--bg);color:var(--text);transition:border .15s;width:100%}
+.field label{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:2px}
+.field input,.field select{padding:14px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:"DM Sans",sans-serif;font-size:16px;background:var(--bg);color:var(--text);transition:border .15s;width:100%;min-height:52px}
 .field input:focus,.field select:focus{outline:none;border-color:var(--blue);background:#fff}
-.btn{border:none;border-radius:var(--radius-sm);padding:9px 18px;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
-.btn-pri{background:var(--text);color:#fff;width:100%}.btn-pri:hover{opacity:.85}
-.btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:#1D4ED8}
-.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#15803D}
-.btn-ghost{background:none;border:1px solid var(--border);color:var(--muted)}.btn-ghost:hover{background:var(--bg)}
-.btn-del{background:none;border:none;color:var(--hint);cursor:pointer;font-size:15px;padding:2px 6px;border-radius:4px}.btn-del:hover{color:var(--red);background:var(--red-light)}
+.btn{border:none;border-radius:var(--radius);padding:15px 20px;font-family:"DM Sans",sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;min-height:52px;display:inline-flex;align-items:center;justify-content:center;gap:8px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn-pri{background:var(--text);color:#fff;width:100%}.btn-pri:active{opacity:.8}
+.btn-blue{background:var(--blue);color:#fff;width:100%}.btn-blue:active{background:#1D4ED8}
+.btn-green{background:var(--green);color:#fff;width:100%}.btn-green:active{background:#15803D}
+.btn-ghost{background:none;border:1.5px solid var(--border);color:var(--text);font-weight:500}.btn-ghost:active{background:var(--bg)}
+.btn-del{background:none;border:none;color:var(--hint);cursor:pointer;font-size:20px;padding:6px 10px;border-radius:8px;min-height:44px;min-width:44px;display:flex;align-items:center;justify-content:center}.btn-del:active{color:var(--red);background:var(--red-light)}
 /* LOGIN */
 #login-screen{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 56px)}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:36px;width:100%;max-width:360px;text-align:center}
 .login-card h2{font-family:"DM Serif Display",serif;font-size:24px;margin-bottom:6px}
 .login-card p{color:var(--muted);font-size:13px;margin-bottom:24px}
 .login-btns{display:flex;flex-direction:column;gap:10px}
-.btn-login{padding:13px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:14px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-login{padding:18px;border-radius:var(--radius);border:none;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:12px;min-height:60px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .btn-login-m{background:var(--matias);color:#fff}
 .btn-login-b{background:var(--barbra);color:#fff}
 /* MODAL */
@@ -95,7 +95,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .modal-overlay.show{display:flex}
 .modal{background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:480px;margin:16px}
 .modal h3{font-family:"DM Serif Display",serif;font-size:20px;margin-bottom:16px}
-.modal-btns{display:flex;gap:8px;margin-top:18px;justify-content:flex-end}
+.modal-btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
 /* TOGGLE */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .toggle-lbl{font-size:13px;color:var(--text)}
@@ -112,7 +112,7 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 #toast.show{opacity:1}
 /* MONTH PILLS */
 .month-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.month-tab{font-size:12px;padding:4px 12px;border-radius:16px;border:1px solid var(--border);cursor:pointer;background:none;color:var(--muted);font-family:"DM Sans",sans-serif}
+.month-tab{font-size:13px;padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);cursor:pointer;background:none;color:var(--muted);font-family:"DM Sans",sans-serif;font-weight:500;min-height:40px;-webkit-tap-highlight-color:transparent}
 .month-tab.active{background:var(--text);color:#fff;border-color:var(--text)}
 /* SECTION */
 .sec-divider{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px;display:flex;align-items:center;justify-content:space-between}
@@ -126,28 +126,27 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .help-box.hidden{display:none}
 /* RESPONSIVE */
 @media(max-width:640px){
-  .main{padding:14px 12px 80px}
+  .main{padding:14px 12px 90px}
   .nav-tabs{margin-bottom:14px}
-  .nav-tab{font-size:12px;padding:7px 4px}
+  .nav-tab{font-size:12px;padding:10px 4px}
   .form-grid{grid-template-columns:1fr}
   .form-grid.three{grid-template-columns:1fr 1fr}
   .metrics{grid-template-columns:1fr 1fr}
   .fondo-bars{grid-template-columns:1fr}
-  .fondo-big .val{font-size:30px}
-  .modal{padding:20px;margin:10px}
-  .card{padding:14px}
-  .btn{padding:10px 14px;font-size:13px}
-  .gasto-item{gap:8px}
-  .gasto-info .gi-name{font-size:13px}
+  .fondo-big .val{font-size:36px}
+  .modal{padding:22px 18px;margin:10px}
+  .gasto-item{gap:10px;padding:12px 0}
   .topbar{padding:0 14px}
   .topbar-title{font-size:17px}
-  .month-tabs{gap:4px}
-  .month-tab{font-size:11px;padding:4px 10px}
-  .help-box{font-size:11px;padding:8px 10px}
-  .field input,.field select{font-size:16px}
+  .month-tabs{gap:6px}
+  .help-box{font-size:12px;padding:8px 10px}
+  .btn{padding:16px 18px;font-size:15px;min-height:54px}
 }
 @media(max-width:380px){
-  .nav-tab{font-size:11px;padding:6px 2px}
+  .nav-tab{font-size:11px;padding:9px 2px}
+  .form-grid.three{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+}
   .form-grid.three{grid-template-columns:1fr}
   .metrics{grid-template-columns:1fr 1fr}
 }
@@ -473,7 +472,7 @@ let cfg = {
 };
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
-function fmt(n) { return 'S/ ' + Math.round(n).toLocaleString('es-PE'); }
+function fmt(n) { const abs = Math.abs(Math.round(n)); return (n < 0 ? '−S/ ' : 'S/ ') + abs.toLocaleString('es-PE'); }
 function mesActual() {
   const h = new Date();
   return h.getFullYear() + '-' + String(h.getMonth()+1).padStart(2,'0');
@@ -623,10 +622,13 @@ function renderPanel() {
   const gastosMes = Object.values(allGastos[mesActivo] || {});
 
   // Fondo card
-  const fondoColor = fondo < cfg.alerta ? 'var(--red)' : fondo < cfg.alerta * 2 ? 'var(--amber)' : 'var(--green)';
+  const fondoColor = fondo < 0 ? 'var(--red)' : fondo < cfg.alerta ? 'var(--amber)' : 'var(--green)';
   document.getElementById('fondo-val').textContent = fmt(fondo);
   document.getElementById('fondo-val').style.color = fondoColor;
-  document.getElementById('fondo-sub').textContent = 'Actualizado en tiempo real · Pendiente: ' + fmt(totalPendiente);
+  const fondoSubTxt = fondo < 0
+    ? '🚨 Fondo en negativo · Pendiente: ' + fmt(totalPendiente)
+    : 'Disponible · Pendiente por pagar: ' + fmt(totalPendiente);
+  document.getElementById('fondo-sub').textContent = fondoSubTxt;
 
   // Aportes mes
   const aportesMes = Object.values(allAportes[mesActivo] || {});
@@ -653,7 +655,7 @@ function renderPanel() {
     '<div class="metric"><div class="m-lbl">Aportes este mes</div><div class="m-val">' + fmt(apTotal) + '</div></div>' +
     '<div class="metric"><div class="m-lbl">Pagado</div><div class="m-val" style="color:var(--green)">' + fmt(totalPagado) + '</div></div>' +
     '<div class="metric"><div class="m-lbl">Pendiente</div><div class="m-val" style="color:var(--amber)">' + fmt(totalPendiente) + '</div></div>' +
-    '<div class="metric"><div class="m-lbl">Disponible</div><div class="m-val" style="color:' + fondoColor + '">' + fmt(fondo) + '</div></div>';
+    '<div class="metric"><div class="m-lbl">Disponible en fondo</div><div class="m-val" style="color:' + fondoColor + ';font-weight:700">' + fmt(fondo) + '</div><div class="m-sub">' + (fondo < 0 ? '⚠ En descubierto' : 'Listo para usar') + '</div></div>';
   document.getElementById('proy-bar').style.width = pct + '%';
   document.getElementById('proy-bar').style.background = barColor;
   document.getElementById('proy-pct-lbl').textContent = pct + '%';
