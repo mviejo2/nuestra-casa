@@ -15,7 +15,7 @@
 :root{--bg:#F7F5F0;--surface:#fff;--border:#E8E4DC;--text:#1A1A18;--muted:#888880;--hint:#BBBBBB;--blue:#2563EB;--blue-light:#EEF3FE;--green:#16A34A;--green-light:#F0FDF4;--amber:#D97706;--amber-light:#FFFBEB;--red:#DC2626;--red-light:#FEF2F2;--matias:#2563EB;--barbra:#16A34A;--radius:12px;--radius-sm:8px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;-webkit-text-size-adjust:100%}
-.main{padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+.main{padding-bottom:calc(80px + env(safe-area-inset-bottom));padding-top:8px}
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right));display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
 .topbar-title{font-family:"DM Serif Display",serif;font-size:21px;letter-spacing:-.5px;font-weight:400}
 .topbar-title span{color:var(--blue)}
@@ -25,9 +25,12 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .av-m{background:var(--matias)}.av-b{background:var(--barbra)}
 .main{max-width:860px;margin:0 auto;padding:20px 16px 80px}
 /* TABS */
-.nav-tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:4px;margin-bottom:20px}
-.nav-tab{flex:1;text-align:center;padding:11px 4px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:none;font-family:"DM Sans",sans-serif;transition:all .15s;min-height:44px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.nav-tab.active{background:var(--text);color:#fff;font-size:14px}
+.nav-tabs{display:flex;gap:0;background:var(--surface);border-top:1px solid var(--border);position:fixed;bottom:0;left:0;right:0;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -2px 20px rgba(0,0,0,.08)}
+.nav-tab{flex:1;text-align:center;padding:10px 4px 8px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);border:none;background:none;font-family:"DM Sans",sans-serif;transition:all .2s;min-height:56px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:flex;flex-direction:column;align-items:center;gap:4px}
+.nav-tab .tab-icon{font-size:22px;line-height:1;transition:transform .2s}
+.nav-tab .tab-lbl{font-size:11px;font-weight:600;line-height:1}
+.nav-tab.active{color:var(--blue)}
+.nav-tab.active .tab-icon{transform:scale(1.15)}
 /* CARDS */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
 .card-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
@@ -145,11 +148,24 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 .sticker-overlay .sticker-tap{color:rgba(255,255,255,.5);font-size:12px;margin-top:12px;letter-spacing:.03em}
 .logro-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);background:var(--text);color:#fff;border-radius:var(--radius);padding:22px 30px;font-size:16px;font-weight:500;text-align:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:998;box-shadow:0 8px 40px rgba(0,0,0,.3);max-width:85vw;line-height:1.5}
 .logro-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+/* CUENTAS */
+.deuda-box{border-radius:var(--radius);padding:16px;margin-bottom:12px;text-align:center}
+.deuda-box.cero{background:var(--green-light);border:1.5px solid #BBF7D0}
+.deuda-box.debe-matias{background:#EEF3FE;border:1.5px solid #BFDBFE}
+.deuda-box.debe-barbra{background:#FEF3C7;border:1.5px solid #FDE68A}
+.deuda-box .db-quien{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.deuda-box .db-monto{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:4px}
+.deuda-box .db-sub{font-size:12px;color:var(--muted)}
+.deuda-btn-row{display:flex;gap:8px;margin-top:12px}
+.deuda-btn-row .btn{flex:1;font-size:13px;min-height:44px;padding:10px}
+.deuda-detalle{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.8;background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px}
+.deuda-detalle .dd-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)}
+.deuda-detalle .dd-row:last-child{border-bottom:none}
 /* RESPONSIVE */
 @media(max-width:640px){
   .main{padding:14px 12px 90px}
-  .nav-tabs{margin-bottom:14px}
-  .nav-tab{font-size:12px;padding:10px 4px}
+  .nav-tab{font-size:10px;padding:8px 2px 6px;min-height:54px}
+  .nav-tab .tab-icon{font-size:20px}
   .form-grid{grid-template-columns:1fr}
   .form-grid.three{grid-template-columns:1fr 1fr}
   .metrics{grid-template-columns:1fr 1fr}
@@ -212,10 +228,18 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 
     <!-- NAV TABS -->
     <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchTab('panel')" id="tab-panel">Panel</button>
-      <button class="nav-tab" onclick="switchTab('gastos')" id="tab-gastos">Gastos</button>
-      <button class="nav-tab" onclick="switchTab('fijos')" id="tab-fijos">Fijos</button>
-      <button class="nav-tab" onclick="switchTab('config')" id="tab-config">Config</button>
+      <button class="nav-tab active" onclick="switchTab('panel')" id="tab-panel">
+        <span class="tab-icon">🏠</span><span class="tab-lbl">Panel</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('gastos')" id="tab-gastos">
+        <span class="tab-icon">💸</span><span class="tab-lbl">Gastos</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('fijos')" id="tab-fijos">
+        <span class="tab-icon">🔁</span><span class="tab-lbl">Fijos</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('config')" id="tab-config">
+        <span class="tab-icon">⚙️</span><span class="tab-lbl">Config</span>
+      </button>
     </div>
 
     <div class="logro-toast" id="logro-toast"></div>
@@ -227,6 +251,12 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
     <div id="tab-content-panel">
       <div class="help-box" id="help-panel"><div class="hb-inner"><span class="hi">🏠</span><span class="hb-txt">Resumen de nuestra casa — la de Matías, Barbra, Renata, Thor, Mérida, Nala y Tikis 🐾</span></div><button class="hb-close" onclick="closeHelp('panel')">×</button></div>
       <div id="alertas-box"></div>
+
+      <!-- CUENTAS ENTRE NOSOTROS -->
+      <div class="card" id="cuentas-card">
+        <div class="card-title">💸 Cuentas entre nosotros</div>
+        <div id="cuentas-contenido"></div>
+      </div>
 
       <!-- FONDO -->
       <div class="card">
@@ -436,6 +466,33 @@ body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min
 </div>
 
 <div id="toast"></div>
+
+<!-- SALDAR MODAL -->
+<div class="modal-overlay" id="saldar-modal">
+  <div class="modal">
+    <h3>💸 Saldar deuda</h3>
+    <div class="help-box" id="help-saldar"><div class="hb-inner"><span class="hi">💡</span><span class="hb-txt">Elige cómo saldar. Del fondo lo descuenta automáticamente.</span></div><button class="hb-close" onclick="closeHelp('saldar')">×</button></div>
+    <div class="field" style="margin-bottom:12px">
+      <label>Monto a saldar (S/)</label>
+      <input type="number" id="sal-monto" placeholder="0" min="0">
+    </div>
+    <div class="field" style="margin-bottom:12px">
+      <label>¿De dónde sale?</label>
+      <select id="sal-origen">
+        <option value="fondo">Del fondo común</option>
+        <option value="directo">Pago directo (Yape, efectivo, etc.)</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>Nota (opcional)</label>
+      <input id="sal-nota" placeholder="Ej: Yape del martes">
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="hideModal('saldar-modal')">Cancelar</button>
+      <button class="btn btn-green" onclick="confirmarSaldar()">✓ Confirmar pago</button>
+    </div>
+  </div>
+</div>
 <div class="sticker-overlay" id="sticker-overlay" onclick="hideSticker()">
   <div class="sticker-box">
     <img id="sticker-img" src="" alt="">
@@ -788,6 +845,7 @@ function calcMesActivo() {
 function renderAll() {
   renderMeses();
   renderPanel();
+  renderCuentas();
   renderGastosList();
   renderPuntos();
 }
@@ -1010,8 +1068,139 @@ function switchTab(tab) {
     document.getElementById('tab-content-'+t).style.display = t===tab?'block':'none';
     document.getElementById('tab-'+t).classList.toggle('active', t===tab);
   });
+  window.scrollTo({top:0, behavior:'smooth'});
   if (tab==='fijos') renderFijos();
   if (tab==='config') applyCfg();
+}
+
+// ── CUENTAS / DEUDAS ─────────────────────────────────────────────────────
+function calcDeuda() {
+  // Positive = Matías le debe a Barbra, Negative = Barbra le debe a Matías
+  const {pM, pB} = calcPct();
+  let saldo = 0;
+
+  // Gastos compartidos pagados por uno de los dos de su bolsillo
+  Object.values(allGastos).forEach(mesG => {
+    Object.values(mesG).forEach(g => {
+      if (g.tipo !== 'shared' || g.estado !== 'paid') return;
+      if (g.pagador === 'barbra') {
+        // Barbra pagó todo → Matías le debe su proporción
+        saldo += g.monto * pM;
+      } else if (g.pagador === 'matias') {
+        // Matías pagó todo → Barbra le debe su proporción
+        saldo -= g.monto * pB;
+      }
+      // pagador === 'fondo' → no genera deuda entre personas
+    });
+  });
+
+  // Restar saldos ya pagados
+  Object.values(allAportes).forEach(mesA => {
+    Object.values(mesA).forEach(a => {
+      if (a.tipo === 'saldar') {
+        if (a.de === 'matias') saldo -= a.monto;
+        else saldo += a.monto;
+      }
+    });
+  });
+
+  return saldo;
+}
+
+function renderCuentas() {
+  const saldo = calcDeuda();
+  const abs = Math.abs(saldo);
+  const {pM, pB} = calcPct();
+  const el = document.getElementById('cuentas-contenido');
+
+  let boxHtml = '';
+  let btnHtml = '';
+
+  if (abs < 1) {
+    boxHtml = '<div class="deuda-box cero"><div class="db-quien">Sin deudas</div><div class="db-monto" style="color:var(--green);font-size:24px">¡Estamos al día! ✓</div><div class="db-sub">Ninguno le debe nada al otro</div></div>';
+  } else if (saldo > 0) {
+    boxHtml = '<div class="deuda-box debe-matias"><div class="db-quien">Matías le debe a Barbra</div><div class="db-monto" style="color:var(--blue)">' + fmt(abs) + '</div><div class="db-sub">Por gastos que Barbra adelantó de su bolsillo</div></div>';
+    btnHtml = '<div class="deuda-btn-row"><button class="btn btn-blue" data-quien="matias" onclick="abrirSaldarEl(this)">Saldar desde fondo o directo</button></div>';
+  } else {
+    boxHtml = '<div class="deuda-box debe-barbra"><div class="db-quien">Barbra le debe a Matías</div><div class="db-monto" style="color:var(--amber)">' + fmt(abs) + '</div><div class="db-sub">Por gastos que Matías adelantó de su bolsillo</div></div>';
+    btnHtml = '<div class="deuda-btn-row"><button class="btn btn-blue" data-quien="barbra" onclick="abrirSaldarEl(this)">Saldar desde fondo o directo</button></div>';
+  }
+
+  // Detalle de gastos que generan deuda
+  const gastosList = [];
+  Object.values(allGastos).forEach(mesG => {
+    Object.values(mesG).forEach(g => {
+      if (g.tipo === 'shared' && g.estado === 'paid' && (g.pagador === 'barbra' || g.pagador === 'matias')) {
+        gastosList.push(g);
+      }
+    });
+  });
+  gastosList.sort((a,b) => b.ts - a.ts);
+
+  let detalleHtml = '';
+  if (gastosList.length > 0) {
+    detalleHtml = '<div class="deuda-detalle">';
+    gastosList.slice(0,5).forEach(g => {
+      const quien = g.pagador === 'barbra' ? 'Pagó Barbra' : 'Pagó Matías';
+      const color = g.pagador === 'barbra' ? 'var(--barbra)' : 'var(--matias)';
+      detalleHtml += '<div class="dd-row"><span><span style="color:' + color + ';font-weight:600">' + quien + '</span> · ' + g.concepto + '</span><span style="font-weight:600">' + fmt(g.monto) + '</span></div>';
+    });
+    if (gastosList.length > 5) detalleHtml += '<div style="text-align:center;padding-top:6px;font-size:12px;color:var(--hint)">+ ' + (gastosList.length-5) + ' más</div>';
+    detalleHtml += '</div>';
+  }
+
+  el.innerHTML = boxHtml + btnHtml + detalleHtml;
+}
+
+let saldandoDe = null;
+function abrirSaldar(quien) {
+  saldandoDe = quien;
+  // Pre-fill with full amount
+  const saldo = Math.abs(calcDeuda());
+  document.getElementById('sal-monto').value = Math.round(saldo);
+  document.getElementById('sal-nota').value = '';
+  showModal('saldar-modal');
+}
+
+async function confirmarSaldar() {
+  const monto = +document.getElementById('sal-monto').value;
+  const origen = document.getElementById('sal-origen').value;
+  const nota = document.getElementById('sal-nota').value.trim();
+  if (!monto) { alert('Ingresa el monto a saldar'); return; }
+
+  const fecha = new Date().toISOString().substring(0,10);
+  const mes = fecha.substring(0,7);
+  const pago = {
+    id: 's' + Date.now(),
+    tipo: 'saldar',
+    de: saldandoDe,
+    monto, origen, nota, fecha,
+    quien: currentUser,
+    ts: Date.now()
+  };
+
+  if (origen === 'fondo') {
+    // Register as a gasto from fondo to reduce fondo balance
+    const g = {
+      id: 'g' + Date.now(),
+      concepto: 'Saldar deuda' + (nota ? ' · ' + nota : ''),
+      monto, cat: 'otro', pagador: 'fondo',
+      fecha, estado: 'paid', tipo: 'shared',
+      quien: currentUser, mes, fijo: false, ts: Date.now()
+    };
+    if (db) await db.ref('gastos/' + mes + '/' + g.id).set(g);
+  }
+
+  // Register the saldar payment
+  if (db) await db.ref('aportes/' + mes + '/' + pago.id).set(pago);
+  else {
+    if (!allAportes[mes]) allAportes[mes] = {};
+    allAportes[mes][pago.id] = pago;
+  }
+
+  hideModal('saldar-modal');
+  showSticker('ambos', '✓ ¡Deuda saldada! Los dos contentos 🎉');
+  showToast('Deuda saldada — ' + fmt(monto) + ' ' + (origen==='fondo'?'del fondo':'pago directo'));
 }
 
 // ── WRAPPERS (data-attribute approach to avoid quote escaping) ────────────
@@ -1019,6 +1208,7 @@ function toggleEstadoEl(el) { toggleEstado(el.dataset.id, el.dataset.mes); }
 function elimGastoEl(el) { eliminarGasto(el.dataset.mes, el.dataset.id); }
 function elimFijoEl(el) { eliminarFijo(el.dataset.id); }
 function eliminarAporteEl(el) { eliminarAporte(el.dataset.mes, el.dataset.id); }
+function abrirSaldarEl(el) { abrirSaldar(el.dataset.quien); }
 function abrirEdicionAporte(el) {
   const mes = el.dataset.mes;
   const id = el.dataset.id;
