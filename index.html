@@ -398,6 +398,37 @@
       <button class="btn-add" onclick="agregarGasto()">+ Registrar</button>
     </div>
 
+    <!-- INGRESOS EXTRA -->
+    <div class="sec-label">Ingresos extra del mes</div>
+    <div class="card">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px;">Ventas, bonos, reembolsos — se suman al fondo común y reducen lo que pagan los dos.</div>
+      <div class="form-grid" style="margin-bottom:12px">
+        <div class="field"><label>Descripción</label><input id="i-concepto" placeholder="Ej: Venta mueble sala"></div>
+        <div class="field"><label>Monto (S/)</label><input type="number" id="i-monto" placeholder="0" min="0"></div>
+      </div>
+      <div class="form-grid three">
+        <div class="field">
+          <label>De quién</label>
+          <select id="i-quien">
+            <option value="casa">De la casa (ambos)</option>
+            <option value="matias">Aporte de Matías</option>
+            <option value="barbra">Aporte de Barbra</option>
+          </select>
+        </div>
+        <div class="field"><label>Categoría</label>
+          <select id="i-cat">
+            <option value="venta">Venta</option>
+            <option value="bono">Bono / Extra laboral</option>
+            <option value="reembolso">Reembolso</option>
+            <option value="regalo">Regalo / Donación</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="field"><label>Fecha</label><input type="date" id="i-fecha"></div>
+      </div>
+      <button class="btn-add" style="background:var(--green)" onclick="agregarIngreso()">+ Registrar ingreso</button>
+    </div>
+
     <!-- HISTORIAL -->
     <div style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
       <div class="sec-label" style="margin:0">Historial</div>
@@ -453,6 +484,7 @@ let currentUser = null;
 let db = null;
 let mesActivo = '';
 let allData = {};
+let ingExtAll = {};
 let cfgListener = null;
 let dataListener = null;
 
@@ -564,7 +596,42 @@ function listenData() {
     renderTabs();
     renderMes();
   });
-  dataListener = () => ref.off('value');
+  const refIng = db.ref('ingresos');
+  refIng.on('value', snap => {
+    ingExtAll = snap.val() || {};
+    renderMes();
+  });
+  dataListener = () => { ref.off('value'); refIng.off('value'); };
+}
+
+async function agregarIngreso() {
+  const concepto = document.getElementById('i-concepto').value.trim();
+  const monto = +document.getElementById('i-monto').value;
+  const origen = document.getElementById('i-quien').value;
+  const cat = document.getElementById('i-cat').value;
+  const fecha = document.getElementById('i-fecha').value;
+  if (!concepto || !monto) { alert('Completa descripción y monto.'); return; }
+  const ingreso = { id: 'i' + Date.now(), concepto, monto, origen, cat, fecha, quien: currentUser, ts: Date.now() };
+  const mes = fecha.substring(0,7);
+  mesActivo = mes;
+  if (db) {
+    await db.ref('ingresos/' + mes + '/' + ingreso.id).set(ingreso);
+  } else {
+    if (!ingExtAll[mes]) ingExtAll[mes] = {};
+    ingExtAll[mes][ingreso.id] = ingreso;
+    renderTabs(); renderMes();
+  }
+  document.getElementById('i-concepto').value = '';
+  document.getElementById('i-monto').value = '';
+  showToast('Ingreso registrado');
+}
+
+async function deleteIngreso(mes, id) {
+  if (db) {
+    await db.ref('ingresos/' + mes + '/' + id).remove();
+  } else {
+    if (ingExtAll[mes]) { delete ingExtAll[mes][id]; renderMes(); }
+  }
 }
 
 async function pushGasto(gasto) {
@@ -636,7 +703,19 @@ function renderTabs() {
 function renderMes() {
   const mesData = allData[mesActivo] || {};
   const gastos = Object.values(mesData).sort((a,b) => b.fecha.localeCompare(a.fecha));
+  const ingExtData = ingExtAll[mesActivo] || {};
+  const ingExtList = Object.values(ingExtData).sort((a,b) => b.fecha.localeCompare(a.fecha));
   const {pM, pB} = calcPct();
+
+  // Fondo común: ingresos extra de la casa se distribuyen proporcionalmente
+  let fondoCasa = 0, aporteM = 0, aporteB = 0;
+  ingExtList.forEach(i => {
+    if (i.origen === 'casa') fondoCasa += i.monto;
+    else if (i.origen === 'matias') aporteM += i.monto;
+    else aporteB += i.monto;
+  });
+  const descuentoM = fondoCasa * pM + aporteM;
+  const descuentoB = fondoCasa * pB + aporteB;
 
   let sharedTotal = 0, soloM = 0, soloB = 0;
   gastos.forEach(g => {
@@ -644,8 +723,10 @@ function renderMes() {
     else if (g.tipo === 'matias') soloM += g.monto;
     else soloB += g.monto;
   });
-  const pagM = sharedTotal * pM + soloM;
-  const pagB = sharedTotal * pB + soloB;
+
+  const pagM = Math.max(0, sharedTotal * pM + soloM - descuentoM);
+  const pagB = Math.max(0, sharedTotal * pB + soloB - descuentoB);
+  const totalIngExt = fondoCasa + aporteM + aporteB;
   const ahorM = cfg.ingMatias - pagM;
   const ahorB = cfg.ingBarbra - pagB;
   const metaM = cfg.ingMatias * (cfg.ahorro/100);
@@ -656,14 +737,15 @@ function renderMes() {
 
   document.getElementById('metrics').innerHTML = `
     <div class="metric"><div class="m-lbl">Total compartido</div><div class="m-val">${fmt(sharedTotal)}</div><div class="m-sub">${gastos.filter(g=>g.tipo==='shared').length} gastos</div></div>
-    <div class="metric"><div class="m-lbl">Paga Matías</div><div class="m-val">${fmt(pagM)}</div><div class="m-sub">${Math.round(pM*100)}% compartido</div></div>
-    <div class="metric"><div class="m-lbl">Paga Barbra</div><div class="m-val">${fmt(pagB)}</div><div class="m-sub">${Math.round(pB*100)}% compartido</div></div>
+    <div class="metric"><div class="m-lbl">Paga Matías</div><div class="m-val">${fmt(pagM)}</div><div class="m-sub">${Math.round(pM*100)}% − descuentos</div></div>
+    <div class="metric"><div class="m-lbl">Paga Barbra</div><div class="m-val">${fmt(pagB)}</div><div class="m-sub">${Math.round(pB*100)}% − descuentos</div></div>
+    ${totalIngExt > 0 ? '<div class="metric"><div class="m-lbl">Fondo extra del mes</div><div class="m-val" style="color:var(--green)">' + fmt(totalIngExt) + '</div><div class="m-sub">' + ingExtList.length + ' ingreso(s)</div></div>' : ''}
   `;
 
   document.getElementById('bars').innerHTML = `
-    <div class="dist-row"><span style="color:var(--matias);font-weight:500">Matías ${Math.round(pM*100)}%</span><span>${fmt(sharedTotal*pM)}</span></div>
+    <div class="dist-row"><span style="color:var(--matias);font-weight:500">Matías ${Math.round(pM*100)}%</span><span>${fmt(sharedTotal*pM)}${descuentoM>0?' <span style=\"color:var(--green);font-size:12px\">− '+fmt(descuentoM)+'</span>':''}</span></div>
     <div class="bar-track"><div class="bar-fill" style="width:${Math.round(pM*100)}%;background:var(--matias)"></div></div>
-    <div class="dist-row"><span style="color:var(--barbra);font-weight:500">Barbra ${Math.round(pB*100)}%</span><span>${fmt(sharedTotal*pB)}</span></div>
+    <div class="dist-row"><span style="color:var(--barbra);font-weight:500">Barbra ${Math.round(pB*100)}%</span><span>${fmt(sharedTotal*pB)}${descuentoB>0?' <span style=\"color:var(--green);font-size:12px\">− '+fmt(descuentoB)+'</span>':''}</span></div>
     <div class="bar-track"><div class="bar-fill" style="width:${Math.round(pB*100)}%;background:var(--barbra)"></div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">
       <div class="metric"><div class="m-lbl">Ahorro Matías</div><div class="m-val ${clsM}">${fmt(ahorM)}</div><div class="m-sub">Meta: ${fmt(metaM)}</div></div>
@@ -671,31 +753,57 @@ function renderMes() {
     </div>
   `;
 
-  const tbody = gastos.length === 0
+  // Tabla gastos
+  const tbodyGastos = gastos.length === 0
     ? `<div class="empty">Sin gastos este mes. ¡Agrega el primero!</div>`
     : `<div class="tbl-wrap"><table>
         <thead><tr><th>Fecha</th><th>Concepto</th><th>Cat.</th><th>Tipo</th><th>Registró</th><th style="text-align:right">Monto</th><th></th></tr></thead>
         <tbody>${gastos.map(g => {
           const badge = g.tipo === 'shared'
-            ? `<span class="badge badge-shared">Compartido</span>`
+            ? '<span class="badge badge-shared">Compartido</span>'
             : g.tipo === 'matias'
-            ? `<span class="badge badge-matias">Solo Matías</span>`
-            : `<span class="badge badge-barbra">Solo Barbra</span>`;
+            ? '<span class="badge badge-matias">Solo Matías</span>'
+            : '<span class="badge badge-barbra">Solo Barbra</span>';
           const whoColor = g.quien === 'matias' ? 'var(--matias)' : 'var(--barbra)';
           const whoName = g.quien === 'matias' ? 'Matías' : 'Barbra';
-          return `<tr>
-            <td style="color:var(--muted);white-space:nowrap">${g.fecha.substring(5)}</td>
-            <td style="font-weight:500">${g.concepto}</td>
-            <td style="color:var(--muted);text-transform:capitalize">${g.cat}</td>
-            <td>${badge}</td>
-            <td><span class="who-dot" style="background:${whoColor}"></span>${whoName}</td>
-            <td style="text-align:right;font-weight:500">${fmt(g.monto)}</td>
-            <td><button class="btn-del" onclick="deleteGasto('${mesActivo}','${g.id}')">×</button></td>
-          </tr>`;
+          return '<tr>'
+            + '<td style="color:var(--muted);white-space:nowrap">'+g.fecha.substring(5)+'</td>'
+            + '<td style="font-weight:500">'+g.concepto+'</td>'
+            + '<td style="color:var(--muted);text-transform:capitalize">'+g.cat+'</td>'
+            + '<td>'+badge+'</td>'
+            + '<td><span class="who-dot" style="background:'+whoColor+'"></span>'+whoName+'</td>'
+            + '<td style="text-align:right;font-weight:500">'+fmt(g.monto)+'</td>'
+            + '<td><button class="btn-del" onclick="deleteGasto(\'' + mesActivo + '\',\'' + g.id + '\')">×</button></td>'
+            + '</tr>';
         }).join('')}</tbody>
       </table></div>`;
 
-  document.getElementById('tabla-gastos').innerHTML = tbody;
+  // Tabla ingresos extra
+  const tbodyIng = ingExtList.length === 0 ? '' :
+    `<div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+      <div style="font-size:12px;font-weight:500;color:var(--green);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Ingresos extra</div>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Fecha</th><th>Descripción</th><th>Cat.</th><th>Origen</th><th>Registró</th><th style="text-align:right">Monto</th><th></th></tr></thead>
+        <tbody>${ingExtList.map(i => {
+          const origenLabel = i.origen==='casa' ? '<span class="badge badge-shared">Casa</span>'
+            : i.origen==='matias' ? '<span class="badge badge-matias">Matías</span>'
+            : '<span class="badge badge-barbra">Barbra</span>';
+          const whoColor = i.quien === 'matias' ? 'var(--matias)' : 'var(--barbra)';
+          const whoName = i.quien === 'matias' ? 'Matías' : 'Barbra';
+          return '<tr>'
+            + '<td style="color:var(--muted);white-space:nowrap">'+i.fecha.substring(5)+'</td>'
+            + '<td style="font-weight:500">'+i.concepto+'</td>'
+            + '<td style="color:var(--muted);text-transform:capitalize">'+i.cat+'</td>'
+            + '<td>'+origenLabel+'</td>'
+            + '<td><span class="who-dot" style="background:'+whoColor+'"></span>'+whoName+'</td>'
+            + '<td style="text-align:right;font-weight:500;color:var(--green)">+'+fmt(i.monto)+'</td>'
+            + '<td><button class="btn-del" onclick="deleteIngreso(\'' + mesActivo + '\', \'' + i.id + '\')">×</button></td>'
+            + '</tr>';
+        }).join('')}</tbody>
+      </table></div>
+    </div>`;
+
+  document.getElementById('tabla-gastos').innerHTML = tbodyGastos + tbodyIng;
 }
 
 // ── ACTIONS ──────────────────────────────────────────────────────────────
@@ -748,6 +856,7 @@ function saveSetup() {
 // ── INIT ─────────────────────────────────────────────────────────────────
 loadLocalCfg();
 setFechaHoy();
+document.getElementById('i-fecha').value = document.getElementById('g-fecha').value;
 initFirebase();
 setDbStatus(null, 'Conectando...');
 </script>
