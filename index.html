@@ -465,6 +465,34 @@ function loadLocalCfg() {
 function saveLocalCfg() {
   localStorage.setItem('gasto_cfg_mb', JSON.stringify(cfg));
 }
+async function saveCfgFirebase() {
+  if (!db) return;
+  await db.ref('config').set({
+    ingMatias: cfg.ingMatias, ingBarbra: cfg.ingBarbra,
+    tc: cfg.tc, tope: cfg.tope, ahorro: cfg.ahorro
+  });
+}
+function listenConfig() {
+  if (!db) return;
+  db.ref('config').on('value', snap => {
+    const d = snap.val();
+    if (d) {
+      cfg = {...cfg, ...d};
+      saveLocalCfg();
+      // Update setup fields if open
+      ['s-ing-m','s-ing-b','s-tc','s-tope','s-ahorro'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id==='s-ing-m') el.value = cfg.ingMatias;
+        if (id==='s-ing-b') el.value = cfg.ingBarbra;
+        if (id==='s-tc') el.value = cfg.tc;
+        if (id==='s-tope') el.value = cfg.tope;
+        if (id==='s-ahorro') el.value = cfg.ahorro;
+      });
+      if (currentUser) renderMes();
+    }
+  });
+}
 
 // ── FIREBASE INIT ────────────────────────────────────────────────────────
 function initFirebase() {
@@ -529,6 +557,7 @@ function logout() {
 function listenData() {
   if (dataListener) { dataListener(); dataListener = null; }
   if (!db) return;
+  listenConfig();
   const ref = db.ref('gastos');
   ref.on('value', snap => {
     allData = snap.val() || {};
@@ -693,9 +722,6 @@ async function agregarGasto() {
 
 // ── SETUP ────────────────────────────────────────────────────────────────
 function showSetup() {
-  document.getElementById('s-apikey').value = cfg.apiKey || '';
-  document.getElementById('s-dburl').value = cfg.dbUrl || '';
-  document.getElementById('s-projectid').value = cfg.projectId || '';
   document.getElementById('s-ing-m').value = cfg.ingMatias || 3000;
   document.getElementById('s-ing-b').value = cfg.ingBarbra || 2000;
   document.getElementById('s-tc').value = cfg.tc || 3.70;
@@ -713,9 +739,10 @@ function saveSetup() {
   cfg.tope = +document.getElementById('s-tope').value || 65;
   cfg.ahorro = +document.getElementById('s-ahorro').value || 10;
   saveLocalCfg();
+  saveCfgFirebase();
   hideSetup();
   if (currentUser) { renderTabs(); renderMes(); }
-  showToast('Configuración guardada');
+  showToast('Configuración guardada para ambos');
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────
